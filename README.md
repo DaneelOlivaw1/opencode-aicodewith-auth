@@ -83,10 +83,12 @@ opencode auth login
 
 按提示操作：
 
-1. 选择 **other**
+1. 选择 **Other**
 2. 供应商名称填：`aicodewith`
-3. 输入你的 API Key
+3. 输入你的 API Key（在 AICodewith 平台创建的 key）
 4. 回车完成
+
+![认证流程](assets/auth-login.png)
 
 ---
 
