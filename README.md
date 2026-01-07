@@ -1,56 +1,118 @@
+<!--
+opencode-aicodewith-auth
+An OpenCode auth plugin for AICodewith
+-->
+
+<div align="center">
+
 # opencode-aicodewith-auth
 
-An OpenCode plugin for AICodewith authentication. Access multiple AI models including GPT-5.2, Claude, and Gemini through AICodewith API.
+**AICodewith authentication plugin for OpenCode.**
+One login → multiple models (GPT, Claude, Gemini) via AICodewith.
 
-## Features
+[![npm version](https://img.shields.io/npm/v/opencode-aicodewith-auth?label=npm&style=flat-square)](https://www.npmjs.com/package/opencode-aicodewith-auth)
+[![npm downloads](https://img.shields.io/npm/dt/opencode-aicodewith-auth?style=flat-square)](https://www.npmjs.com/package/opencode-aicodewith-auth)
+[![license](https://img.shields.io/badge/license-MIT-black?style=flat-square)](#license)
 
-- Unified authentication for multiple AI providers
-- Support for the following models:
-  - `gpt-5.2-codex` - OpenAI GPT-5.2 Codex
-  - `gpt-5.2` - OpenAI GPT-5.2
-  - `claude-sonnet-4-5-20250929` - Anthropic Claude Sonnet 4.5
-  - `claude-opus-4-5-20251101` - Anthropic Claude Opus 4.5
-  - `gemini-3-pro-high` - Google Gemini 3 Pro High
-- Automatic configuration injection
+</div>
+
+---
+
+## What this does
+
+OpenCode supports many providers. This plugin adds **AICodewith** as an auth/provider layer, so you can:
+
+- keep **one** provider config
+- authenticate once
+- select from multiple models inside OpenCode
+
+If your team ships across providers (OpenAI/Anthropic/Google), this keeps setup predictable.
+
+---
+
+## Supported models
+
+Out of the box, the plugin exposes these model identifiers:
+
+- `gpt-5.2-codex`
+- `gpt-5.2`
+- `claude-sonnet-4-5-20250929`
+- `claude-opus-4-5-20251101`
+- `gemini-3-pro-high`
+
+> You can extend/override models in `opencode.json` if AICodewith adds more.
+
+---
 
 ## Installation
 
-### From npm
+### For humans
 
-Add the plugin to your OpenCode configuration file:
+Add the plugin to your OpenCode config:
 
-```json title="opencode.json"
+```json
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": ["opencode-aicodewith-auth"]
 }
 ```
 
-Then restart OpenCode. The plugin will be automatically installed.
+Then restart OpenCode.
 
-### From source
+---
 
-1. Clone the repository:
-```bash
-git clone https://github.com/DaneelOlivaw1/opencode-aicodewith-auth.git
-cd opencode-aicodewith-auth
+### For LLM agents (copy-paste)
+
+Open a fresh session in your coding agent (OpenCode / Claude Code / Cursor / etc.) and paste:
+
+```
+Install and configure opencode-aicodewith-auth by following the instructions here: https://raw.githubusercontent.com/DaneelOlivaw1/opencode-aicodewith-auth/main/README.md
 ```
 
-2. Install dependencies:
+This README is written so an agent can follow it step-by-step.
+
+---
+
+## Authentication
+
+### Option A — Environment variable (recommended)
+
+Set your API key:
+
 ```bash
-bun install
+export AICODEWITH_API_KEY="sk-your-api-key"
 ```
 
-3. Build the plugin:
-```bash
-bun run build
-```
+To persist it:
 
-## Configuration
+* **macOS/Linux**: add the export line to `~/.zshrc` or `~/.bashrc`, then restart your terminal
+* **Windows (PowerShell)**:
 
-After installation, the plugin will automatically configure the `aicodewith` provider in your OpenCode config. You can also manually configure it:
+  ```powershell
+  setx AICODEWITH_API_KEY "sk-your-api-key"
+  ```
 
-```json title="~/.config/opencode/opencode.json"
+---
+
+### Option B — OpenCode TUI
+
+OpenCode → Auth/Login → choose:
+
+**AICodewith API Key**
+
+(If your plugin registers a dedicated auth method, this will appear automatically.)
+
+---
+
+## Provider configuration
+
+### Auto-injected (default)
+
+After installation, the plugin will inject an `aicodewith` provider into your OpenCode config automatically.
+
+If you prefer to manage it manually, use this template:
+
+```json
 {
   "provider": {
     "aicodewith": {
@@ -69,45 +131,72 @@ After installation, the plugin will automatically configure the `aicodewith` pro
 }
 ```
 
-## Authentication
-
-Set your AICodewith API key as an environment variable:
-
-```bash
-export AICODEWITH_API_KEY=sk-your-api-key
-```
-
-Or authenticate via the OpenCode TUI by selecting the "AICodewith API Key" authentication method.
+---
 
 ## Usage
 
-Once configured, you can select any of the supported models in OpenCode:
+Pick a model at launch:
 
 ```bash
 opencode --model gpt-5.2-codex
 ```
 
-Or switch models within the TUI.
+Or switch inside the OpenCode UI.
+
+---
+
+## Troubleshooting
+
+### "Provider not found: aicodewith"
+
+* Confirm the plugin is actually loaded:
+  * check your `opencode.json` has `"plugin": ["opencode-aicodewith-auth"]`
+* restart OpenCode after editing config
+
+### "Missing env var AICODEWITH_API_KEY"
+
+* run `echo $AICODEWITH_API_KEY` (macOS/Linux) or `echo %AICODEWITH_API_KEY%` (Windows cmd)
+* if you set it in a shell rc file, **restart the terminal**
+
+### Requests hit the wrong endpoint
+
+* check your `provider.aicodewith.api`
+* make sure it points to your AICodewith API base, not a placeholder
+
+---
+
+## Security notes
+
+* Treat `AICODEWITH_API_KEY` like a password.
+* Don't commit keys into git.
+* Prefer OS keychain / CI secrets / env vars.
+
+---
 
 ## Development
 
-### Build
+Clone and build:
 
 ```bash
+git clone https://github.com/DaneelOlivaw1/opencode-aicodewith-auth.git
+cd opencode-aicodewith-auth
+bun install
 bun run build
 ```
 
-### Type check
+Type check:
 
 ```bash
 bun run typecheck
 ```
 
-### Clean
+Clean:
 
 ```bash
 bun run clean
 ```
+
+---
 
 ## License
 
