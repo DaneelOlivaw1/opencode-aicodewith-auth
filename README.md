@@ -146,24 +146,6 @@ opencode --model gpt-5.2-codex
 * 确认 `opencode.json` 中有 `"plugin": ["opencode-aicodewith-auth"]`
 * 修改配置后记得重启 OpenCode
 
-### "Missing env var AICODEWITH_API_KEY"
-
-* 运行 `echo $AICODEWITH_API_KEY` 检查环境变量是否生效
-* 如果是写在 shell 配置文件里的，**重启终端**
-
-### 请求打到了错误的地址
-
-* 检查 `provider.aicodewith.api` 配置
-* 确保指向正确的 AICodewith API 地址
-
----
-
-## 安全提示
-
-* 把 `AICODEWITH_API_KEY` 当密码一样保护
-* 不要把 Key 提交到 Git
-* 建议使用系统钥匙串 / CI Secrets / 环境变量
-
 ---
 
 ## 开发
