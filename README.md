@@ -66,10 +66,10 @@ Then restart OpenCode.
 Open a fresh session in your coding agent (OpenCode / Claude Code / Cursor / etc.) and paste:
 
 ```
-Install and configure opencode-aicodewith-auth by following the instructions here: https://raw.githubusercontent.com/DaneelOlivaw1/opencode-aicodewith-auth/main/README.md
+Install and configure opencode-aicodewith-auth by following the instructions here: https://raw.githubusercontent.com/DaneelOlivaw1/opencode-aicodewith-auth/main/README.ai.md
 ```
 
-This README is written so an agent can follow it step-by-step.
+The AI will guide you through the entire setup, including API key registration if needed.
 
 ---
 
