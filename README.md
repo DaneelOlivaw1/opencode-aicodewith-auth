@@ -46,22 +46,7 @@ OpenCode 支持多种 AI 提供商。这个插件把 **AICodewith** 作为统一
 
 ## 安装
 
-### 手动安装
-
-在你的 OpenCode 配置文件中添加插件：
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-aicodewith-auth"]
-}
-```
-
-然后重启 OpenCode。
-
----
-
-### 让 AI 帮你装（复制粘贴）
+### 让 AI 帮你装（推荐）
 
 打开你的 AI 编程助手（OpenCode / Claude Code / Cursor 等），粘贴这句话：
 
@@ -73,7 +58,24 @@ AI 会引导你完成整个安装流程，包括注册获取 API Key（如果你
 
 ---
 
-## 认证
+### 手动安装
+
+#### 第一步：添加插件
+
+在你的 OpenCode 配置文件中添加插件：
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["opencode-aicodewith-auth"]
+}
+```
+
+#### 第二步：重启 OpenCode
+
+关闭并重新打开 OpenCode，让插件生效。
+
+#### 第三步：运行认证
 
 在终端运行：
 
@@ -90,9 +92,7 @@ opencode auth login
 
 ![认证流程](assets/auth-login.png)
 
----
-
-### 还没有 API Key？
+#### 还没有 API Key？
 
 去 **https://aicodewith.com/** 注册账号，注册后会获得 API Key 和体验额度。
 
