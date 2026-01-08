@@ -24,6 +24,7 @@ export interface UpdateCheckResult {
 
 export interface AutoUpdateOptions {
   autoUpdate?: boolean
+  showStartupToast?: boolean
 }
 
 export interface PluginEntryInfo {

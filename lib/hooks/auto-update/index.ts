@@ -12,8 +12,11 @@ import { invalidatePackage } from "./cache"
 import { PACKAGE_NAME, CACHE_DIR } from "./constants"
 import type { AutoUpdateOptions } from "./types"
 
+const DISPLAY_NAME = "AICodewith"
+const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+
 export function createAutoUpdateHook(ctx: PluginInput, options: AutoUpdateOptions = {}) {
-  const { autoUpdate = true } = options
+  const { autoUpdate = true, showStartupToast = true } = options
 
   let hasChecked = false
 
@@ -27,11 +30,20 @@ export function createAutoUpdateHook(ctx: PluginInput, options: AutoUpdateOption
 
       hasChecked = true
 
+      const cachedVersion = getCachedVersion()
       const localDevVersion = getLocalDevVersion(ctx.directory)
+      const displayVersion = localDevVersion ?? cachedVersion ?? "unknown"
 
       if (localDevVersion) {
+        if (showStartupToast) {
+          showStartupToastWithSpinner(ctx, `${displayVersion} (dev)`, "Local development mode").catch(() => {})
+        }
         log("Local development mode, skipping update check")
         return
+      }
+
+      if (showStartupToast) {
+        showStartupToastWithSpinner(ctx, displayVersion, "GPT-5.2 · Claude · Gemini").catch(() => {})
       }
 
       runBackgroundUpdateCheck(ctx, autoUpdate).catch((err) => {
@@ -39,6 +51,28 @@ export function createAutoUpdateHook(ctx: PluginInput, options: AutoUpdateOption
       })
     },
   }
+}
+
+async function showStartupToastWithSpinner(ctx: PluginInput, version: string, message: string): Promise<void> {
+  const totalDuration = 3000
+  const frameInterval = 100
+  const totalFrames = Math.floor(totalDuration / frameInterval)
+
+  for (let i = 0; i < totalFrames; i++) {
+    const spinner = SPINNER_FRAMES[i % SPINNER_FRAMES.length]
+    await ctx.client.tui
+      .showToast({
+        body: {
+          title: `${spinner} ${DISPLAY_NAME} v${version}`,
+          message,
+          variant: "info" as const,
+          duration: frameInterval + 50,
+        },
+      })
+      .catch(() => {})
+    await new Promise(resolve => setTimeout(resolve, frameInterval))
+  }
+  log(`Startup toast shown: v${version}`)
 }
 
 async function runBackgroundUpdateCheck(ctx: PluginInput, autoUpdate: boolean): Promise<void> {
@@ -132,7 +166,7 @@ async function showUpdateAvailableToast(
   await ctx.client.tui
     .showToast({
       body: {
-        title: `${PACKAGE_NAME} Update Available`,
+        title: `${DISPLAY_NAME} Update Available`,
         message: `v${currentVersion} → v${latestVersion}\nRestart OpenCode to apply.`,
         variant: "info" as const,
         duration: 8000,
@@ -150,7 +184,7 @@ async function showAutoUpdatedToast(
   await ctx.client.tui
     .showToast({
       body: {
-        title: `${PACKAGE_NAME} Updated!`,
+        title: `${DISPLAY_NAME} Updated!`,
         message: `v${oldVersion} → v${newVersion}\nRestart OpenCode to apply.`,
         variant: "success" as const,
         duration: 8000,
