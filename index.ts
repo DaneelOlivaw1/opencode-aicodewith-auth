@@ -126,7 +126,11 @@ const applyProviderConfig = (config: Record<string, any>) => {
   const hasMissingModels = ALLOWED_MODEL_IDS.some(
     (id) => !Object.prototype.hasOwnProperty.call(existingModels, id),
   )
-  if (!next.models || hasExtraModels || hasMissingModels) {
+  const hasIncompleteModels = ALLOWED_MODEL_IDS.some((id) => {
+    const model = existingModels[id]
+    return !model || typeof model !== "object" || !model.name
+  })
+  if (!next.models || hasExtraModels || hasMissingModels || hasIncompleteModels) {
     next.models = toModelMap(ALLOWED_MODEL_IDS, existingModels)
     changed = true
   }
