@@ -6,6 +6,7 @@ import {
   findPluginEntry,
   getLatestVersion,
   updatePinnedVersion,
+  hasOhMyOpencode,
   log,
 } from "./checker"
 import { invalidatePackage } from "./cache"
@@ -33,16 +34,17 @@ export function createAutoUpdateHook(ctx: PluginInput, options: AutoUpdateOption
       const cachedVersion = getCachedVersion()
       const localDevVersion = getLocalDevVersion(ctx.directory)
       const displayVersion = localDevVersion ?? cachedVersion ?? "unknown"
+      const omoInstalled = hasOhMyOpencode(ctx.directory)
 
       if (localDevVersion) {
-        if (showStartupToast) {
+        if (showStartupToast && !omoInstalled) {
           showStartupToastWithSpinner(ctx, `${displayVersion} (dev)`, "Local development mode").catch(() => {})
         }
         log("Local development mode, skipping update check")
         return
       }
 
-      if (showStartupToast) {
+      if (showStartupToast && !omoInstalled) {
         showStartupToastWithSpinner(ctx, displayVersion, "GPT-5.2 · Claude · Gemini").catch(() => {})
       }
 

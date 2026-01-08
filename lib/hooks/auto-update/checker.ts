@@ -244,4 +244,26 @@ export async function getLatestVersion(): Promise<string | null> {
   }
 }
 
+const OH_MY_OPENCODE = "oh-my-opencode"
+
+export function hasOhMyOpencode(directory: string): boolean {
+  for (const configPath of getConfigPaths(directory)) {
+    try {
+      if (!fs.existsSync(configPath)) continue
+      const content = fs.readFileSync(configPath, "utf-8")
+      const config = JSON.parse(stripJsonComments(content)) as OpencodeConfig
+      const plugins = config.plugin ?? []
+
+      for (const entry of plugins) {
+        if (entry === OH_MY_OPENCODE || entry.startsWith(`${OH_MY_OPENCODE}@`) || entry.includes(OH_MY_OPENCODE)) {
+          return true
+        }
+      }
+    } catch {
+      continue
+    }
+  }
+  return false
+}
+
 export { log }

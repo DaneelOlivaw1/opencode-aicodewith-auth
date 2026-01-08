@@ -1,6 +1,6 @@
 {
   "name": "opencode-aicodewith-auth",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "OpenCode plugin for AICodewith authentication - Access GPT-5.2, Claude, and Gemini models through AICodewith API",
   "type": "module",
   "main": "dist/index.js",
