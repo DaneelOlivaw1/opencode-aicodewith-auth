@@ -110,41 +110,6 @@ const buildStandardProviderConfig = () => ({
   npm: PROVIDER_NPM,
 })
 
-const MODEL_ID_MIGRATIONS: Record<string, string> = {
-  "claude-sonnet-4-5-20250929": "claude-sonnet-4-5",
-  "claude-opus-4-5-20251101": "claude-opus-4-5",
-  "gemini-3-pro-high": "gemini-3-pro",
-}
-
-const migrateModelId = (modelId: string | unknown): string | unknown => {
-  if (typeof modelId !== "string") return modelId
-  const withoutProvider = modelId.replace(/^aicodewith\//, "")
-  const migrated = MODEL_ID_MIGRATIONS[withoutProvider]
-  if (!migrated) return modelId
-  return modelId.startsWith("aicodewith/") ? `aicodewith/${migrated}` : migrated
-}
-
-const migrateModelIdsInConfig = (obj: any): boolean => {
-  if (!obj || typeof obj !== "object") return false
-  let changed = false
-
-  for (const key in obj) {
-    if (key === "model" && typeof obj[key] === "string") {
-      const migrated = migrateModelId(obj[key])
-      if (migrated !== obj[key]) {
-        obj[key] = migrated
-        changed = true
-      }
-    } else if (typeof obj[key] === "object") {
-      if (migrateModelIdsInConfig(obj[key])) {
-        changed = true
-      }
-    }
-  }
-
-  return changed
-}
-
 const applyProviderConfig = (config: Record<string, any>) => {
   let changed = false
 
@@ -161,10 +126,6 @@ const applyProviderConfig = (config: Record<string, any>) => {
   const nextPlugins = ensurePluginEntry(config.plugin)
   if (nextPlugins !== config.plugin) {
     config.plugin = nextPlugins
-    changed = true
-  }
-
-  if (migrateModelIdsInConfig(config)) {
     changed = true
   }
 
@@ -194,18 +155,6 @@ const ensureConfigFile = async () => {
     if (!config || typeof config !== "object") return
 
     const changed = applyProviderConfig(config)
-
-    // Also migrate oh-my-opencode.json if exists
-    const omoPath = path.join(configDir, "oh-my-opencode.json")
-    if (await fileExists(omoPath)) {
-      const omoConfig = await readJsonOrJsonc(omoPath)
-      if (omoConfig && typeof omoConfig === "object") {
-        if (migrateModelIdsInConfig(omoConfig)) {
-          await writeFile(omoPath, `${JSON.stringify(omoConfig, null, 2)}\n`, "utf-8")
-        }
-      }
-    }
-
     if (!changed) return
 
     await mkdir(configDir, { recursive: true })

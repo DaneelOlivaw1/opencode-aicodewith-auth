@@ -11,11 +11,11 @@
       "name": "GPT-5.2",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "claude-sonnet-4-5": {
+    "claude-sonnet-4-5-20250929": {
       "name": "Claude Sonnet 4.5",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "claude-opus-4-5": {
+    "claude-opus-4-5-20251101": {
       "name": "Claude Opus 4.5",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },

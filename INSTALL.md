@@ -40,8 +40,8 @@ OpenCode 支持多种 AI 提供商。这个插件使用 **AICodewith** 作为统
 |---------|------|
 | `aicodewith/gpt-5.2-codex` | GPT-5.2 代码优化版 |
 | `aicodewith/gpt-5.2` | 最新 GPT-5.2 |
-| `aicodewith/claude-sonnet-4-5` | Claude Sonnet 4.5 |
-| `aicodewith/claude-opus-4-5` | Claude Opus 4.5 |
+| `aicodewith/claude-sonnet-4-5-20250929 | Claude Sonnet 4.5 |
+| `aicodewith/claude-opus-4-5-20251101 | Claude Opus 4.5 |
 | `aicodewith/gemini-3-pro` | Gemini 3 Pro |
 
 > AICodewith 后续支持更多模型时,插件也会同步更新。
@@ -264,8 +264,8 @@ If using official registry:
 > You can now use any of these models:
 > - `aicodewith/gpt-5.2-codex`
 > - `aicodewith/gpt-5.2`
-> - `aicodewith/claude-sonnet-4-5`
-> - `aicodewith/claude-opus-4-5`
+> - `aicodewith/claude-sonnet-4-5-20250929
+> - `aicodewith/claude-opus-4-5-20251101
 > - `aicodewith/gemini-3-pro`
 >
 > To test, run: `opencode --model aicodewith/gpt-5.2-codex`"
@@ -323,8 +323,8 @@ opencode --model aicodewith/gpt-5.2-codex
       "models": {
         "gpt-5.2-codex": {},
         "gpt-5.2": {},
-        "claude-sonnet-4-5": {},
-        "claude-opus-4-5": {},
+        "claude-sonnet-4-5-20250929: {},
+        "claude-opus-4-5-20251101: {},
         "gemini-3-pro": {}
       }
     }
@@ -369,13 +369,13 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "agents": {
     "Sisyphus": {
-      "model": "aicodewith/claude-opus-4-5"
+      "model": "aicodewith/claude-opus-4-5-20251101
     },
     "oracle": {
       "model": "aicodewith/gpt-5.2"
     },
     "librarian": {
-      "model": "aicodewith/claude-sonnet-4-5"
+      "model": "aicodewith/claude-sonnet-4-5-20250929
     },
     "explore": {
       "model": "aicodewith/gemini-3-pro"
@@ -413,7 +413,7 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
     "opencode-aicodewith-auth",
     "oh-my-opencode"
   ],
-  "model": "aicodewith/claude-opus-4-5"
+  "model": "aicodewith/claude-opus-4-5-20251101
 }
 ```
 

@@ -134,13 +134,13 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
   "google_auth": false,
   "agents": {
     "Sisyphus": {
-      "model": "aicodewith/claude-opus-4-5"
+      "model": "aicodewith/claude-opus-4-5-20251101
     },
     "oracle": {
       "model": "aicodewith/gpt-5.2"
     },
     "librarian": {
-      "model": "aicodewith/claude-sonnet-4-5"
+      "model": "aicodewith/claude-sonnet-4-5-20250929
     },
     "explore": {
       "model": "aicodewith/gemini-3-pro"
@@ -191,7 +191,7 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
     "opencode-aicodewith-auth",
     "oh-my-opencode"
   ],
-  "model": "aicodewith/claude-opus-4-5"
+  "model": "aicodewith/claude-opus-4-5-20251101
 }
 ```
 
@@ -301,7 +301,7 @@ npm config get registry
 ## 成功标志
 
 安装成功后，用户应该能够：
-1. 运行 `opencode --model aicodewith/claude-opus-4-5` 正常启动
+1. 运行 `opencode --model aicodewith/claude-opus-4-5-20251101 正常启动
 2. 在 OpenCode 中看到所有 AICodewith 模型可选
 3. 使用 `ultrawork` 关键词触发 Sisyphus 编排多个 agents
 4. 各个 agent（oracle、librarian、explore 等）正常工作

@@ -63,8 +63,8 @@ User Request → OpenCode → Plugin Auth Hook → Route by Model:
 |---------|---------|:-------:|---------|
 | `aicodewith/gpt-5.2-codex` | GPT-5.2 Codex | ✅ | 日常编程、代码生成 |
 | `aicodewith/gpt-5.2` | GPT-5.2 | ✅ | 架构设计、逻辑推理 |
-| `aicodewith/claude-sonnet-4-5` | Claude Sonnet 4.5 | ✅ | 代码审查、文档查询 |
-| `aicodewith/claude-opus-4-5` | Claude Opus 4.5 | ✅ | 复杂任务、深度思考 |
+| `aicodewith/claude-sonnet-4-5-20250929 | Claude Sonnet 4.5 | ✅ | 代码审查、文档查询 |
+| `aicodewith/claude-opus-4-5-20251101 | Claude Opus 4.5 | ✅ | 复杂任务、深度思考 |
 | `aicodewith/gemini-3-pro` | Gemini 3 Pro | ✅ | 前端 UI、多模态任务 |
 
 ---
