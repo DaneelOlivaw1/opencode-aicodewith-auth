@@ -185,9 +185,9 @@ If the output is NOT `https://registry.npmjs.org/` (e.g., shows taobao, cnpm, or
 > 你现在可以使用以下模型：
 > - `gpt-5.2-codex`
 > - `gpt-5.2`
-> - `claude-sonnet-4-5-20250929`
-> - `claude-opus-4-5-20251101`
-> - `gemini-3-pro-high`
+> - `claude-sonnet-4-5`
+> - `claude-opus-4-5`
+> - `gemini-3-pro`
 >
 > 测试命令: `opencode --model gpt-5.2-codex`"
 
@@ -197,9 +197,9 @@ If the output is NOT `https://registry.npmjs.org/` (e.g., shows taobao, cnpm, or
 > 你现在可以使用以下模型：
 > - `gpt-5.2-codex`
 > - `gpt-5.2`
-> - `claude-sonnet-4-5-20250929`
-> - `claude-opus-4-5-20251101`
-> - `gemini-3-pro-high`
+> - `claude-sonnet-4-5`
+> - `claude-opus-4-5`
+> - `gemini-3-pro`
 >
 > 测试命令: `opencode --model gpt-5.2-codex`
 >

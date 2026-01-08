@@ -49,7 +49,7 @@
 安装完成后，运行：
 
 ```bash
-opencode --model aicodewith/claude-opus-4-5-20251101
+opencode --model aicodewith/claude-opus-4-5
 ```
 
 然后在提示词中加入 `ultrawork` 或 `ulw`，体验完整的 Agent 团队协作！

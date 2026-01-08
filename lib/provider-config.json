@@ -11,15 +11,15 @@
       "name": "GPT-5.2",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "claude-sonnet-4-5-20250929": {
+    "claude-sonnet-4-5": {
       "name": "Claude Sonnet 4.5",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "claude-opus-4-5-20251101": {
+    "claude-opus-4-5": {
       "name": "Claude Opus 4.5",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "gemini-3-pro-high": {
+    "gemini-3-pro": {
       "name": "Gemini 3 Pro",
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     }
