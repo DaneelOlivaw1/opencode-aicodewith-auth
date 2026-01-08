@@ -32,3 +32,7 @@ scripts/
 - `gpt-5.2-codex` → "GPT-5.2 Codex"
 - `claude-sonnet-4-5-20250929` → "Claude Sonnet 4.5"
 - etc.
+
+**Model Capabilities:**
+- All models declare `modalities: { input: ["text", "image"], output: ["text"] }`
+- This enables image input support in OpenCode UI

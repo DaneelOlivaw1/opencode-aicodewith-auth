@@ -44,12 +44,14 @@ const DEFAULT_ENV = ["AICODEWITH_API_KEY"]
 
 const DEFAULT_OUTPUT_TOKEN_MAX = 32000
 
-const MODEL_CONFIGS: Record<string, { name: string }> = {
-  "gpt-5.2-codex": { name: "GPT-5.2 Codex" },
-  "gpt-5.2": { name: "GPT-5.2" },
-  "claude-sonnet-4-5-20250929": { name: "Claude Sonnet 4.5" },
-  "claude-opus-4-5-20251101": { name: "Claude Opus 4.5" },
-  "gemini-3-pro-high": { name: "Gemini 3 Pro" },
+const IMAGE_MODALITIES = { input: ["text", "image"], output: ["text"] }
+
+const MODEL_CONFIGS: Record<string, { name: string; modalities: { input: string[]; output: string[] } }> = {
+  "gpt-5.2-codex": { name: "GPT-5.2 Codex", modalities: IMAGE_MODALITIES },
+  "gpt-5.2": { name: "GPT-5.2", modalities: IMAGE_MODALITIES },
+  "claude-sonnet-4-5-20250929": { name: "Claude Sonnet 4.5", modalities: IMAGE_MODALITIES },
+  "claude-opus-4-5-20251101": { name: "Claude Opus 4.5", modalities: IMAGE_MODALITIES },
+  "gemini-3-pro-high": { name: "Gemini 3 Pro", modalities: IMAGE_MODALITIES },
 }
 
 const ALLOWED_MODEL_IDS = Object.keys(MODEL_CONFIGS)
