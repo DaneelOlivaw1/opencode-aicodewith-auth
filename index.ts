@@ -27,7 +27,9 @@ const CODEX_MODEL_PREFIXES = ["gpt-", "codex"]
 const PACKAGE_NAME = "opencode-aicodewith-auth"
 const PROVIDER_NAME = "AICodewith"
 const PLUGIN_ENTRY = import.meta.url
-const PROVIDER_NPM = new URL("./provider.ts", import.meta.url).href
+// Use same extension as current file (*.ts in dev, *.js after build)
+const PROVIDER_EXT = import.meta.url.endsWith(".ts") ? ".ts" : ".js"
+const PROVIDER_NPM = new URL(`./provider${PROVIDER_EXT}`, import.meta.url).href
 const DEFAULT_API = "https://api.openai.com/v1"
 const DEFAULT_ENV = ["AICODEWITH_API_KEY"]
 
