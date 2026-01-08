@@ -262,7 +262,6 @@ export async function transformRequestBody(
   )
 
   body.model = normalizedModel
-  body.store = false
   body.stream = true
   body.instructions = codexInstructions
 

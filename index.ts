@@ -81,31 +81,27 @@ const deepEqual = (a: unknown, b: unknown): boolean => {
   if (typeof a !== typeof b) return false
   if (a === null || b === null) return a === b
   if (typeof a !== "object") return false
-  
+
   const aObj = a as Record<string, unknown>
   const bObj = b as Record<string, unknown>
   const aKeys = Object.keys(aObj)
   const bKeys = Object.keys(bObj)
-  
+
   if (aKeys.length !== bKeys.length) return false
-  
+
   for (const key of aKeys) {
     if (!Object.prototype.hasOwnProperty.call(bObj, key)) return false
     if (!deepEqual(aObj[key], bObj[key])) return false
   }
-  
+
   return true
 }
 
-const isPackageEntry = (value: string) =>
-  value === PACKAGE_NAME || value.startsWith(`${PACKAGE_NAME}@`)
+const isPackageEntry = (value: string) => value === PACKAGE_NAME || value.startsWith(`${PACKAGE_NAME}@`)
 
 const ensurePluginEntry = (list: unknown) => {
   if (!Array.isArray(list)) return [PLUGIN_ENTRY]
-  const hasPlugin = list.some(
-    (entry) =>
-      typeof entry === "string" && (entry === PLUGIN_ENTRY || isPackageEntry(entry)),
-  )
+  const hasPlugin = list.some((entry) => typeof entry === "string" && (entry === PLUGIN_ENTRY || isPackageEntry(entry)))
   return hasPlugin ? list : [...list, PLUGIN_ENTRY]
 }
 
@@ -116,11 +112,11 @@ const buildStandardProviderConfig = () => ({
 
 const applyProviderConfig = (config: Record<string, any>) => {
   let changed = false
-  
+
   const providerMap = config.provider && typeof config.provider === "object" ? config.provider : {}
   const existingProvider = providerMap[PROVIDER_ID]
   const standardProvider = buildStandardProviderConfig()
-  
+
   if (!deepEqual(existingProvider, standardProvider)) {
     providerMap[PROVIDER_ID] = standardProvider
     config.provider = providerMap
@@ -141,10 +137,10 @@ const ensureConfigFile = async () => {
   ensureConfigPromise = (async () => {
     const jsoncExists = await fileExists(configPathJsonc)
     const jsonExists = await fileExists(configPathJson)
-    
+
     let configPath: string
     let config: Record<string, unknown>
-    
+
     if (jsoncExists) {
       configPath = configPathJsonc
       config = (await readJsonOrJsonc(configPath)) ?? {}
@@ -153,14 +149,14 @@ const ensureConfigFile = async () => {
       config = (await readJsonOrJsonc(configPath)) ?? {}
     } else {
       configPath = configPathJson
-      config = { "$schema": "https://opencode.ai/config.json" }
+      config = { $schema: "https://opencode.ai/config.json" }
     }
-    
+
     if (!config || typeof config !== "object") return
-    
+
     const changed = applyProviderConfig(config)
     if (!changed) return
-    
+
     await mkdir(configDir, { recursive: true })
     await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8")
   })()
@@ -230,7 +226,13 @@ const rewriteUrl = (originalUrl: string, baseUrl: string) => {
   const rewritten = new URL(original.toString())
   rewritten.protocol = base.protocol
   rewritten.host = base.host
-  rewritten.pathname = `${basePath}${original.pathname}`
+
+  let targetPath = original.pathname
+  if (basePath.endsWith("/v1") && targetPath.startsWith("/v1/")) {
+    targetPath = targetPath.slice(3)
+  }
+
+  rewritten.pathname = `${basePath}${targetPath}`
   return rewritten.toString()
 }
 
@@ -326,10 +328,8 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
           const { model, isStreaming } = parseRequestBody(init)
           const isClaudeRequest = isModel(model, "claude-") || isClaudeUrl(originalUrl)
           const isGeminiRequest = isModel(model, "gemini-") || isGeminiUrl(originalUrl)
-          const isGeminiStreaming =
-            isGeminiRequest && (isStreaming || originalUrl.includes("streamGenerateContent"))
-          const isCodexRequest =
-            !isClaudeRequest && !isGeminiRequest && isCodexModel(model)
+          const isGeminiStreaming = isGeminiRequest && (isStreaming || originalUrl.includes("streamGenerateContent"))
+          const isCodexRequest = !isClaudeRequest && !isGeminiRequest && isCodexModel(model)
 
           if (isCodexRequest) {
             const transformation = await transformRequestForCodex(init)
