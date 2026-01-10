@@ -51,17 +51,32 @@ which opencode || command -v opencode
 
 Guide the user to install OpenCode first:
 
-**macOS (Homebrew):**
+**Recommended (one-line install):**
 ```bash
-brew install opencode
+curl -fsSL https://opencode.ai/install | bash
 ```
+
+**Alternative methods:**
 
 **npm:**
 ```bash
-npm install -g opencode-ai
+npm i -g opencode-ai
 ```
 
-**Other methods:** See https://opencode.ai/docs
+**bun:**
+```bash
+bun add -g opencode-ai
+```
+
+**Homebrew (official tap):**
+```bash
+brew install anomalyco/tap/opencode
+```
+
+**Arch Linux (AUR):**
+```bash
+paru -S opencode
+```
 
 After installation, verify:
 ```bash

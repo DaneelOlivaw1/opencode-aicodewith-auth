@@ -38,19 +38,36 @@
 which opencode || command -v opencode
 ```
 
-如果未安装：
+If OpenCode is NOT installed:
 
-**macOS (Homebrew):**
+**Recommended (one-line install):**
 ```bash
-brew install opencode
+curl -fsSL https://opencode.ai/install | bash
 ```
+
+**Alternative methods:**
 
 **npm:**
 ```bash
-npm install -g opencode-ai
+npm i -g opencode-ai
 ```
 
-验证：
+**bun:**
+```bash
+bun add -g opencode-ai
+```
+
+**Homebrew (official tap):**
+```bash
+brew install anomalyco/tap/opencode
+```
+
+**Arch Linux (AUR):**
+```bash
+paru -S opencode
+```
+
+Verify:
 ```bash
 opencode --version
 ```

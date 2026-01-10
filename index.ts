@@ -31,6 +31,7 @@ import {
   handleSuccessResponse,
   transformRequestForCodex,
 } from "./lib/request/fetch-helpers"
+import { transformClaudeRequest, transformClaudeResponse } from "./lib/request/claude-tools-transform"
 import { createAutoUpdateHook } from "./lib/hooks/auto-update"
 import { saveRawResponse, SAVE_RAW_RESPONSE_ENABLED } from "./lib/logger"
 import STANDARD_PROVIDER_CONFIG from "./lib/provider-config.json"
@@ -364,8 +365,10 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
 
           if (isClaudeRequest) {
             const targetUrl = rewriteUrl(originalUrl, AICODEWITH_ANTHROPIC_BASE_URL)
-            const response = await fetch(targetUrl, init)
-            return await saveResponseIfEnabled(response, "claude", { url: targetUrl, model })
+            const transformedInit = transformClaudeRequest(init)
+            const response = await fetch(targetUrl, transformedInit)
+            const savedResponse = await saveResponseIfEnabled(response, "claude", { url: targetUrl, model })
+            return transformClaudeResponse(savedResponse)
           }
 
           return await fetch(originalUrl, init)
