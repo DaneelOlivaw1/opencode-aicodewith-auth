@@ -2,6 +2,22 @@
 
 **适用于 LLM Agent 自动化安装**
 
+## 重要说明：OpenCode ≠ Claude Code
+
+| 工具 | 命令 | 说明 |
+|------|------|------|
+| **OpenCode** | `opencode` | 开源 AI 编码工具，支持多模型、插件系统、oh-my-opencode |
+| **Claude Code** | `claude` | Anthropic 官方 CLI，仅支持 Claude 模型，无插件系统 |
+
+**本插件适用于 OpenCode，不是 Claude Code。**
+
+如果你在 Claude Code 中执行本安装流程：
+- ✅ 可以完成所有安装步骤（安装 OpenCode、配置文件等）
+- ⚠️ 安装完成后，需要在**新终端窗口**中运行 `opencode` 来使用 Sisyphus
+- ❌ 无法在 Claude Code 内部直接使用 oh-my-opencode 的功能
+
+---
+
 ## 任务目标
 
 帮助用户同时安装和配置：
@@ -175,6 +191,32 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
 }
 ```
 
+> **⚠️ 极其重要：Agent 名称必须完全一致，区分大小写！**
+>
+> 以下 agent 名称是 oh-my-opencode 内部固定的，**不能改动、不能用同义词替换**：
+>
+> | 正确名称 | 作用 | 常见错误写法 |
+> |---------|------|-------------|
+> | `Sisyphus` | 主编排 agent | ~~orchestrator~~, ~~main~~, ~~sisyphus~~ |
+> | `oracle` | 架构顾问 | ~~architect~~, ~~advisor~~ |
+> | `librarian` | 文档/代码查询 | ~~researcher~~, ~~search~~ |
+> | `explore` | 代码探索 | ~~explorer~~, ~~codebase~~ |
+> | `frontend-ui-ux-engineer` | 前端 UI/UX | ~~frontend~~, ~~ui~~ |
+> | `document-writer` | 文档编写 | ~~docs~~, ~~writer~~ |
+> | `multimodal-looker` | 多模态分析 | ~~vision~~, ~~multimodal~~ |
+>
+> **错误示例（绝对不要这样写）：**
+> ```json
+> {
+>   "agents": {
+>     "orchestrator": { "model": "..." },
+>     "architect": { "model": "..." },
+>     "default": { "model": "..." }
+>   }
+> }
+> ```
+> 上述配置会导致 agents 使用默认的 Anthropic API 而不是 AICodewith！
+
 **配置说明：**
 - `google_auth: false` - 禁用 oh-my-opencode 的内置 Google 认证
 - 所有 agents 的 `model` 都使用 `aicodewith/` 前缀
@@ -226,7 +268,27 @@ npm config get registry
 
 #### 5.2 告诉用户安装完成
 
-**如果使用官方 npm 源：**
+**如果用户在 Claude Code 中执行安装：**
+
+> **"安装完成！🎉"**
+>
+> 所有配置文件已就绪。由于你当前在 Claude Code 中，需要在**新终端窗口**启动 OpenCode：
+>
+> **macOS/Linux:**
+> ```bash
+> # 打开新终端窗口，运行：
+> opencode
+> ```
+>
+> **Windows:**
+> ```powershell
+> # 打开新 PowerShell 窗口，运行：
+> opencode
+> ```
+>
+> 启动后输入 `ultrawork` 或 `ulw` 关键词，即可使用 Sisyphus 编排多个 agents 并行工作。
+
+**如果用户在 OpenCode 或普通终端中执行安装，且使用官方 npm 源：**
 
 > **"安装完成！🎉"**
 >
@@ -279,6 +341,8 @@ npm config get registry
 6. **ALWAYS preserve user settings** — 保留用户现有的所有配置
 7. **Use `bunx` or `npx`** — 如果 bunx 不可用，回退到 npx
 8. **ALWAYS check npm registry and warn if using mirrors** — 运行 `npm config get registry`，如果不是官方源则在最终提示中警告用户可能存在同步问题
+9. **NEVER invent agent names** — Agent 名称必须严格使用 `Sisyphus`、`oracle`、`librarian`、`explore`、`frontend-ui-ux-engineer`、`document-writer`、`multimodal-looker`，不能用 `orchestrator`、`architect`、`default` 等自创名称
+10. **ALWAYS copy the exact JSON from Step 4** — oh-my-opencode.json 的内容必须严格按照文档中的 JSON 复制，不要修改 agent 名称
 
 ---
 
@@ -304,10 +368,34 @@ npm config get registry
 - 检查 `opencode.json` 是否包含 `"oh-my-opencode"`
 - 重新运行 `bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no`
 
-### Agents 仍使用默认模型
-- 检查 `oh-my-opencode.json` 中的 agents 配置
-- 确保模型名称使用 `aicodewith/` 前缀
-- 重启 OpenCode
+### Agents 仍使用默认模型（如 Anthropic API）
+
+这是最常见的配置错误，通常是因为 **agent 名称写错了**。
+
+**排查步骤：**
+
+1. 检查 `oh-my-opencode.json` 中的 agent 名称是否正确：
+```bash
+cat ~/.config/opencode/oh-my-opencode.json
+```
+
+2. **正确的 agent 名称**（区分大小写）：
+   - `Sisyphus` ✅ （不是 `orchestrator`、`main`、`sisyphus`）
+   - `oracle` ✅ （不是 `architect`、`advisor`）
+   - `librarian` ✅
+   - `explore` ✅ （不是 `explorer`）
+   - `frontend-ui-ux-engineer` ✅
+   - `document-writer` ✅
+   - `multimodal-looker` ✅
+
+3. 如果名称错误，删除并重新创建配置文件：
+```bash
+rm ~/.config/opencode/oh-my-opencode.json
+```
+然后按照 Step 4 重新创建正确的配置。
+
+4. 确保模型名称使用 `aicodewith/` 前缀
+5. 重启 OpenCode
 
 ### bunx 命令失败
 - Ubuntu/Debian Snap 用户：改用 `npx oh-my-opencode install ...`
