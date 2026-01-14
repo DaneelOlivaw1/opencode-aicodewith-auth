@@ -48,49 +48,31 @@
 
 ---
 
-### Step 1: 检查 OpenCode 是否已安装
+### Step 1: 按照官方文档安装 oh-my-opencode
+
+**📖 官方安装文档：** https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/refs/heads/master/README.md
+
+按照官方文档的 "For LLM Agents" 部分进行安装，**但有以下关键修改**：
+
+#### 1.1 在 Step 0（询问订阅）时
+
+当官方文档询问用户是否有 Claude/ChatGPT/Gemini 订阅时，**全部回答 NO**：
 
 ```bash
-which opencode || command -v opencode
+bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
 ```
 
-If OpenCode is NOT installed:
+**原因：** 我们使用 AICodewith 作为统一认证层，不需要这些订阅。
 
-**Recommended (one-line install):**
-```bash
-curl -fsSL https://opencode.ai/install | bash
-```
+#### 1.2 跳过官方文档的 Step 4（Configure Authentication）
 
-**Alternative methods:**
+**不要执行** 官方文档中的认证步骤（Anthropic、Google Gemini、OpenAI 的 OAuth 登录）。
 
-**npm:**
-```bash
-npm i -g opencode-ai
-```
-
-**bun:**
-```bash
-bun add -g opencode-ai
-```
-
-**Homebrew (official tap):**
-```bash
-brew install anomalyco/tap/opencode
-```
-
-**Arch Linux (AUR):**
-```bash
-paru -S opencode
-```
-
-Verify:
-```bash
-opencode --version
-```
+这些步骤是为有订阅的用户准备的，我们将在下一步使用 AICodewith 认证代替。
 
 ---
 
-### Step 2: 安装 opencode-aicodewith-auth
+### Step 2: 安装 opencode-aicodewith-auth 插件
 
 #### 2.1 配置 auth.json
 
@@ -113,53 +95,66 @@ mkdir -p ~/.local/share/opencode
 }
 ```
 
-#### 2.2 配置 opencode.json
+#### 2.2 添加插件到 opencode.json
 
 **目标路径：** `~/.config/opencode/opencode.json`
 
-1. 确保目录存在：
-```bash
-mkdir -p ~/.config/opencode
-```
-
-2. 读取现有配置并保留所有现有设置
-3. 添加插件到 `plugin` 数组（如果不存在则创建）：
+在现有的 `plugin` 数组中添加 `"opencode-aicodewith-auth"`（放在 `"oh-my-opencode"` 之前）：
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-aicodewith-auth"]
+  "plugin": [
+    "opencode-aicodewith-auth",
+    "oh-my-opencode"
+  ]
 }
 ```
 
 **合并规则：**
 - 如果 `plugin` 数组已存在 → 追加 `"opencode-aicodewith-auth"`（如果还没有）
-- 如果 `plugin` 不存在 → 创建数组
 - **绝不删除现有插件**
 
 ---
 
-### Step 3: 安装 oh-my-opencode
-
-运行安装命令（不启用 Claude/ChatGPT/Gemini 的内置认证）：
-
-```bash
-bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
-```
-
-**注意：** 
-- `--no-tui` 避免交互界面阻塞
-- 所有认证参数设为 `no`，因为我们使用 AICodewith 作为统一认证层
-
----
-
-### Step 4: 配置 oh-my-opencode 使用 AICodewith 模型
-
-#### 4.1 创建或更新 oh-my-opencode.json
+### Step 3: 修改 oh-my-opencode 配置，使用 AICodewith 模型
 
 **目标路径：** `~/.config/opencode/oh-my-opencode.json`
 
-读取现有配置（如果存在）并合并，否则创建新文件：
+Step 1 安装完成后，官方会自动生成这个配置文件。现在需要修改它，把所有 agent 的模型都改成 AICodewith 的模型。
+
+#### 3.1 读取现有配置
+
+```bash
+cat ~/.config/opencode/oh-my-opencode.json
+```
+
+#### 3.2 了解可用的 AICodewith 模型
+
+| 模型 | 擅长领域 |
+|-----|---------|
+| `aicodewith/claude-opus-4-5-20251101` | 最强推理能力，适合主编排、复杂决策 |
+| `aicodewith/gpt-5.2` | 架构设计、逻辑推理、代码审查 |
+| `aicodewith/gemini-3-pro` | 前端 UI/UX、创意任务、视觉相关 |
+| `aicodewith/claude-sonnet-4-5-20250929` | 通用任务、文档、探索、杂活 |
+
+#### 3.3 修改 agents 配置
+
+**修改规则：**
+
+1. 设置 `"google_auth": false`（禁用内置 Google 认证）
+2. 遍历 `agents` 对象中的**每一个 agent**
+3. **根据每个 agent 的名称和角色描述，选择最合适的 AICodewith 模型：**
+   - 主编排 agent（如 `Sisyphus`）→ `aicodewith/claude-opus-4-5-20251101`
+   - 架构/审查/策略相关 agent（如 `oracle`）→ `aicodewith/gpt-5.2`
+   - 前端/UI/UX/视觉相关 agent（如 `frontend-ui-ux-engineer`）→ `aicodewith/gemini-3-pro`
+   - 其他通用 agent → `aicodewith/claude-sonnet-4-5-20250929`
+
+> **⚠️ 重要：不要硬编码 agent 列表！**
+>
+> 官方可能会新增 agent，所以必须**遍历配置文件中已有的所有 agent**，根据其角色智能选择模型。
+
+#### 3.4 示例：修改后的配置
 
 ```json
 {
@@ -172,93 +167,34 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
     "oracle": {
       "model": "aicodewith/gpt-5.2"
     },
+    "frontend-ui-ux-engineer": {
+      "model": "aicodewith/gemini-3-pro"
+    },
     "librarian": {
       "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "explore": {
-      "model": "aicodewith/gemini-3-pro"
-    },
-    "frontend-ui-ux-engineer": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "document-writer": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "multimodal-looker": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
     }
   }
 }
 ```
 
-> **⚠️ 极其重要：Agent 名称必须完全一致，区分大小写！**
->
-> 以下 agent 名称是 oh-my-opencode 内部固定的，**不能改动、不能用同义词替换**：
->
-> | 正确名称 | 作用 | 常见错误写法 |
-> |---------|------|-------------|
-> | `Sisyphus` | 主编排 agent | ~~orchestrator~~, ~~main~~, ~~sisyphus~~ |
-> | `oracle` | 架构顾问 | ~~architect~~, ~~advisor~~ |
-> | `librarian` | 文档/代码查询 | ~~researcher~~, ~~search~~ |
-> | `explore` | 代码探索 | ~~explorer~~, ~~codebase~~ |
-> | `frontend-ui-ux-engineer` | 前端 UI/UX | ~~frontend~~, ~~ui~~ |
-> | `document-writer` | 文档编写 | ~~docs~~, ~~writer~~ |
-> | `multimodal-looker` | 多模态分析 | ~~vision~~, ~~multimodal~~ |
->
-> **错误示例（绝对不要这样写）：**
-> ```json
-> {
->   "agents": {
->     "orchestrator": { "model": "..." },
->     "architect": { "model": "..." },
->     "default": { "model": "..." }
->   }
-> }
-> ```
-> 上述配置会导致 agents 使用默认的 Anthropic API 而不是 AICodewith！
+#### 3.5 保留其他配置
 
-**配置说明：**
-- `google_auth: false` - 禁用 oh-my-opencode 的内置 Google 认证
-- 所有 agents 的 `model` 都使用 `aicodewith/` 前缀
-- 模型分配策略：
-  - **Sisyphus**（主编排）→ Claude Opus 4.5（最强推理能力）
-  - **oracle**（架构/审查）→ GPT-5.2（逻辑推理）
-  - **librarian**（文档查询）→ Claude Sonnet 4.5（深度理解）
-  - **explore**（快速探索）→ Gemini 3 Pro（快速响应）
-  - **frontend/document/multimodal** → Gemini 3 Pro（创意任务）
-
-#### 4.2 更新 opencode.json 添加 oh-my-opencode 插件
-
-确保 `~/.config/opencode/opencode.json` 中的 `plugin` 数组同时包含两个插件：
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    "opencode-aicodewith-auth",
-    "oh-my-opencode"
-  ]
-}
-```
-
-可选：设置默认模型
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    "opencode-aicodewith-auth",
-    "oh-my-opencode"
-  ],
-  "model": "aicodewith/claude-opus-4-5-20251101"
-}
-```
+修改时**只改 `google_auth` 和 `agents` 里的 `model`**，保留配置文件中的其他所有设置（如 `disabled_hooks`、`ralph_loop` 等）
 
 ---
 
-### Step 5: 验证安装
+### Step 4: 验证安装
 
-#### 5.1 检查 npm 源
+#### 4.1 检查 npm 源
 
 ```bash
 npm config get registry
@@ -266,7 +202,7 @@ npm config get registry
 
 如果输出不是 `https://registry.npmjs.org/`（例如显示 taobao、cnpm 等镜像），需要在最终提示中加入警告。
 
-#### 5.2 告诉用户安装完成
+#### 4.2 告诉用户安装完成
 
 **如果用户在 Claude Code 中执行安装：**
 
@@ -274,21 +210,13 @@ npm config get registry
 >
 > 所有配置文件已就绪。由于你当前在 Claude Code 中，需要在**新终端窗口**启动 OpenCode：
 >
-> **macOS/Linux:**
 > ```bash
-> # 打开新终端窗口，运行：
-> opencode
-> ```
->
-> **Windows:**
-> ```powershell
-> # 打开新 PowerShell 窗口，运行：
 > opencode
 > ```
 >
 > 启动后输入 `ultrawork` 或 `ulw` 关键词，即可使用 Sisyphus 编排多个 agents 并行工作。
 
-**如果用户在 OpenCode 或普通终端中执行安装，且使用官方 npm 源：**
+**如果用户在 OpenCode 或普通终端中执行安装：**
 
 > **"安装完成！🎉"**
 >
@@ -311,17 +239,13 @@ npm config get registry
 
 > ⚠️ **注意**: 检测到你使用的是非官方 npm 源。如果启动 OpenCode 时遇到插件加载失败（如 `BunInstallFailedError`），可能是镜像源尚未同步最新版本。解决方法：
 > ```bash
-> # 临时切换到官方源
 > npm config set registry https://registry.npmjs.org/
-> # 重启 OpenCode
-> # 之后可以改回原来的源
+> # 重启 OpenCode，之后可以改回原来的源
 > ```
 
 ---
 
-### Step 6: 文件清单总结
-
-告诉用户已修改的文件：
+## 文件清单总结
 
 | 文件路径 | 说明 |
 |---------|------|
@@ -339,10 +263,9 @@ npm config get registry
 4. **NEVER run interactive commands without tmux** — `opencode auth login` 会阻塞
 5. **ALWAYS verify file writes** — 写入后重新读取确认 JSON 有效
 6. **ALWAYS preserve user settings** — 保留用户现有的所有配置
-7. **Use `bunx` or `npx`** — 如果 bunx 不可用，回退到 npx
-8. **ALWAYS check npm registry and warn if using mirrors** — 运行 `npm config get registry`，如果不是官方源则在最终提示中警告用户可能存在同步问题
-9. **NEVER invent agent names** — Agent 名称必须严格使用 `Sisyphus`、`oracle`、`librarian`、`explore`、`frontend-ui-ux-engineer`、`document-writer`、`multimodal-looker`，不能用 `orchestrator`、`architect`、`default` 等自创名称
-10. **ALWAYS copy the exact JSON from Step 4** — oh-my-opencode.json 的内容必须严格按照文档中的 JSON 复制，不要修改 agent 名称
+7. **ALWAYS follow official oh-my-opencode README first** — 本文档只补充 AICodewith 认证部分
+8. **NEVER hardcode agent list** — 必须遍历官方配置中的所有 agent，根据角色智能选择模型
+9. **ALWAYS choose model by agent role** — 主编排用 Opus，架构用 GPT，前端用 Gemini，其他用 Sonnet
 
 ---
 
@@ -350,64 +273,27 @@ npm config get registry
 
 ### "BunInstallFailedError" 或插件加载失败
 
-这通常是因为 npm 镜像源尚未同步最新版本。告诉用户：
-
-> "这个问题通常是因为你的 npm 镜像源还没有同步最新版本。解决方法：
-> ```bash
-> # 临时切换到官方源
-> npm config set registry https://registry.npmjs.org/
-> # 重启 OpenCode
-> # 之后可以改回原来的源
-> ```"
+```bash
+# 临时切换到官方源
+npm config set registry https://registry.npmjs.org/
+# 重启 OpenCode，之后可以改回原来的源
+```
 
 ### "Provider not found: aicodewith"
 - 检查 `opencode.json` 是否包含 `"opencode-aicodewith-auth"`
 - 重启 OpenCode
 
-### "Plugin not found: oh-my-opencode"
-- 检查 `opencode.json` 是否包含 `"oh-my-opencode"`
-- 重新运行 `bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no`
+### Agents 仍使用默认模型
 
-### Agents 仍使用默认模型（如 Anthropic API）
-
-这是最常见的配置错误，通常是因为 **agent 名称写错了**。
-
-**排查步骤：**
-
-1. 检查 `oh-my-opencode.json` 中的 agent 名称是否正确：
-```bash
-cat ~/.config/opencode/oh-my-opencode.json
-```
-
-2. **正确的 agent 名称**（区分大小写）：
-   - `Sisyphus` ✅ （不是 `orchestrator`、`main`、`sisyphus`）
-   - `oracle` ✅ （不是 `architect`、`advisor`）
-   - `librarian` ✅
-   - `explore` ✅ （不是 `explorer`）
-   - `frontend-ui-ux-engineer` ✅
-   - `document-writer` ✅
-   - `multimodal-looker` ✅
-
-3. 如果名称错误，删除并重新创建配置文件：
-```bash
-rm ~/.config/opencode/oh-my-opencode.json
-```
-然后按照 Step 4 重新创建正确的配置。
-
-4. 确保模型名称使用 `aicodewith/` 前缀
-5. 重启 OpenCode
-
-### bunx 命令失败
-- Ubuntu/Debian Snap 用户：改用 `npx oh-my-opencode install ...`
-- 或重新安装 Bun：`curl -fsSL https://bun.sh/install | bash`
+检查 `oh-my-opencode.json`：
+1. 确认 `google_auth` 设为 `false`
+2. 确认**每个** agent 的 model 都有 `aicodewith/` 前缀
+3. 如果官方新增了 agent 但没有配置 model，添加 `aicodewith/claude-sonnet-4-5-20250929`
 
 ---
 
 ## 成功标志
 
-安装成功后，用户应该能够：
 1. 运行 `opencode --model aicodewith/claude-opus-4-5-20251101` 正常启动
-2. 在 OpenCode 中看到所有 AICodewith 模型可选
-3. 使用 `ultrawork` 关键词触发 Sisyphus 编排多个 agents
-4. 各个 agent（oracle、librarian、explore 等）正常工作
-5. 只需一个 AICodewith 账号，无需其他订阅
+2. 使用 `ultrawork` 关键词触发 Sisyphus 编排多个 agents
+3. 只需一个 AICodewith 账号，无需其他订阅
