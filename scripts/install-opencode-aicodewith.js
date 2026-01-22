@@ -20,8 +20,12 @@ const MODEL_CONFIGS = {
   "gpt-5.2": { name: "GPT-5.2", modalities: IMAGE_MODALITIES },
   "claude-sonnet-4-5-20250929": { name: "Claude Sonnet 4.5", modalities: IMAGE_MODALITIES },
   "claude-opus-4-5-20251101": { name: "Claude Opus 4.5", modalities: IMAGE_MODALITIES },
+  "claude-sonnet-4-5-20250929-third-party": { name: "Claude Sonnet 4.5 (third party)", modalities: IMAGE_MODALITIES },
+  "claude-opus-4-5-20251101-third-party": { name: "Claude Opus 4.5 (third party)", modalities: IMAGE_MODALITIES },
   "gemini-3-pro": { name: "Gemini 3 Pro", modalities: IMAGE_MODALITIES },
 };
+
+const DEFAULT_MODEL = "aicodewith/claude-opus-4-5-20251101-third-party";
 
 const ALLOWED_MODEL_IDS = Object.keys(MODEL_CONFIGS);
 const ALLOWED_MODEL_SET = new Set(ALLOWED_MODEL_IDS);
@@ -111,6 +115,12 @@ function applyProviderConfig(config) {
   const nextPlugins = ensurePluginEntry(config.plugin);
   if (nextPlugins !== config.plugin) {
     config.plugin = nextPlugins;
+    changed = true;
+  }
+
+  // Set default model if not configured
+  if (!config.model) {
+    config.model = DEFAULT_MODEL;
     changed = true;
   }
 
