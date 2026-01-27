@@ -20,6 +20,7 @@ const DEFAULT_MODEL = `${PROVIDER_ID}/claude-sonnet-4-5-20250929`
  * Model mapping rules:
  * - anthropic/claude-opus-* -> aicodewith/claude-opus-4-5-20251101
  * - anthropic/claude-sonnet-* -> aicodewith/claude-sonnet-4-5-20250929
+ * - openai/gpt-*-codex or codex-* -> aicodewith/gpt-5.2-codex
  * - openai/gpt-* or gpt-* -> aicodewith/gpt-5.2
  * - google/gemini-* or gemini-* -> aicodewith/gemini-3-pro
  * - Already aicodewith/* -> keep as is
@@ -53,12 +54,21 @@ const mapModelToAicodewith = (model: string): string => {
     return `${PROVIDER_ID}/claude-sonnet-4-5-20250929`
   }
 
+  // GPT Codex mapping (must check before generic GPT)
+  if (
+    lowerModel.includes("codex") ||
+    lowerModel.includes("gpt-5.2-codex") ||
+    lowerModel.includes("gpt-5.1-codex") ||
+    lowerModel.includes("gpt_5_codex")
+  ) {
+    return `${PROVIDER_ID}/gpt-5.2-codex`
+  }
+
   // GPT/OpenAI mapping
   if (
     lowerModel.includes("gpt-") ||
     lowerModel.includes("gpt_") ||
-    lowerModel.startsWith("openai/") ||
-    lowerModel.includes("codex")
+    lowerModel.startsWith("openai/")
   ) {
     return `${PROVIDER_ID}/gpt-5.2`
   }
