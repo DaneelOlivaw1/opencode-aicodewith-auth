@@ -59,6 +59,20 @@ export const CATEGORY_MODEL_MAP: Record<string, string> = {
 export const DEFAULT_MODEL = `${PROVIDER_ID}/claude-sonnet-4-5-20250929`
 
 /**
+ * Default OMO config when file doesn't exist
+ */
+export const DEFAULT_CONFIG = {
+  $schema:
+    "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  agents: Object.fromEntries(
+    Object.entries(AGENT_MODEL_MAP).map(([name, model]) => [name, { model }])
+  ),
+  categories: Object.fromEntries(
+    Object.entries(CATEGORY_MODEL_MAP).map(([name, model]) => [name, { model }])
+  ),
+}
+
+/**
  * OMO config file name
  */
 export const OMO_CONFIG_FILENAME = "oh-my-opencode.json"

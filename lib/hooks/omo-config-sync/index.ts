@@ -11,6 +11,7 @@ import os from "node:os"
 import {
   AGENT_MODEL_MAP,
   CATEGORY_MODEL_MAP,
+  DEFAULT_CONFIG,
   DEFAULT_MODEL,
   OMO_CONFIG_FILENAME,
 } from "./constants"
@@ -64,11 +65,21 @@ const getDefaultModelForCategory = (categoryName: string): string => {
 export const syncOmoConfig = async (): Promise<void> => {
   const configPath = getOmoConfigPath()
 
+  let config: OmoConfig
+
   if (!(await fileExists(configPath))) {
+    // File doesn't exist - create with default config
+    config = DEFAULT_CONFIG
+    try {
+      await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8")
+    } catch (error) {
+      console.warn(
+        `[${PACKAGE_NAME}] Failed to create OMO config: ${error instanceof Error ? error.message : error}`
+      )
+    }
     return
   }
 
-  let config: OmoConfig
   try {
     const content = await readFile(configPath, "utf-8")
     config = JSON.parse(content) as OmoConfig

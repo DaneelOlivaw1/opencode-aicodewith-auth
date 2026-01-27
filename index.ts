@@ -311,12 +311,16 @@ const getOutputTokenLimit = (
 }
 
 export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
-  await Promise.all([
-    ensureConfigFile(),
-    syncOmoConfig(),
-  ]).catch((error) => {
+  await ensureConfigFile().catch((error) => {
     console.warn(
       `[${PACKAGE_NAME}] Failed to update config: ${error instanceof Error ? error.message : error}`,
+    )
+  })
+
+  // Run OMO config sync in background without blocking plugin initialization
+  syncOmoConfig().catch((error) => {
+    console.warn(
+      `[${PACKAGE_NAME}] Failed to sync OMO config: ${error instanceof Error ? error.message : error}`,
     )
   })
 
