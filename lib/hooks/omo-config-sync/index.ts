@@ -119,8 +119,18 @@ const getOmoConfigPath = (): string => {
 export const syncOmoConfig = async (): Promise<void> => {
   const configPath = getOmoConfigPath()
 
-  // If file doesn't exist, don't create it - let OMO create it first
+  // If file doesn't exist, create a minimal config with schema
   if (!(await fileExists(configPath))) {
+    const defaultConfig: OmoConfig = {
+      $schema: "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+    }
+    try {
+      await writeFile(configPath, `${JSON.stringify(defaultConfig, null, 2)}\n`, "utf-8")
+    } catch (error) {
+      console.warn(
+        `[${PACKAGE_NAME}] Failed to create OMO config: ${error instanceof Error ? error.message : error}`
+      )
+    }
     return
   }
 
