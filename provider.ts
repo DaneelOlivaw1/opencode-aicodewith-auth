@@ -93,5 +93,3 @@ export function createAicodewith(options: AicodewithProviderSettings = {}): Aico
 
   return provider
 }
-
-export const aicodewith = createAicodewith()

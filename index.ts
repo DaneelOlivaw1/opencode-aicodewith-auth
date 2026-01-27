@@ -12,7 +12,6 @@ import type { Auth, Provider } from "@opencode-ai/sdk"
 import { mkdir, readFile, writeFile, access } from "node:fs/promises"
 import path from "node:path"
 import os from "node:os"
-import { createAicodewith as createAicodewithProvider, type AicodewithProviderSettings } from "./provider"
 import {
   AUTH_METHOD_LABEL,
   CODEX_BASE_URL,
@@ -164,16 +163,6 @@ const ensureConfigFile = async () => {
     await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf-8")
   })()
   return ensureConfigPromise
-}
-
-const isPluginInput = (input: unknown): input is PluginInput => {
-  if (!input || typeof input !== "object") return false
-  return "client" in input && "project" in input && "directory" in input
-}
-
-export function createAicodewith(input: AicodewithProviderSettings | PluginInput) {
-  if (isPluginInput(input)) return {} as Hooks
-  return createAicodewithProvider(input)
 }
 
 const parseRequestBody = (init?: RequestInit) => {
