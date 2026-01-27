@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "sisyphus": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "oracle": {
+      "model": "aicodewith/gpt-5.2"
+    },
+    "librarian": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "explore": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "multimodal-looker": {
+      "model": "aicodewith/gemini-3-pro"
+    },
+    "prometheus": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "metis": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "momus": {
+      "model": "aicodewith/gpt-5.2"
+    },
+    "atlas": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "build": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "plan": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "sisyphus-junior": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "OpenCode-Builder": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "general": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "frontend-ui-ux-engineer": {
+      "model": "aicodewith/gemini-3-pro"
+    },
+    "document-writer": {
+      "model": "aicodewith/gemini-3-pro"
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "aicodewith/gemini-3-pro"
+    },
+    "ultrabrain": {
+      "model": "aicodewith/gpt-5.2-codex"
+    },
+    "artistry": {
+      "model": "aicodewith/gemini-3-pro"
+    },
+    "quick": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "unspecified-low": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "unspecified-high": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
+    },
+    "writing": {
+      "model": "aicodewith/gemini-3-pro"
+    },
+    "visual": {
+      "model": "aicodewith/gemini-3-pro"
+    },
+    "business-logic": {
+      "model": "aicodewith/gpt-5.2"
+    },
+    "data-analysis": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    }
+  }
+}
