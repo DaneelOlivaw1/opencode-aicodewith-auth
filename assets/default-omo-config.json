@@ -55,19 +55,25 @@
       "model": "aicodewith/gemini-3-pro"
     },
     "ultrabrain": {
-      "model": "aicodewith/gpt-5.2-codex"
+      "model": "aicodewith/gpt-5.2-codex",
+      "variant": "xhigh"
+    },
+    "deep": {
+      "model": "aicodewith/claude-opus-4-5-20251101"
     },
     "artistry": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gemini-3-pro",
+      "variant": "max"
     },
     "quick": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-haiku-4-5-20251001"
     },
     "unspecified-low": {
       "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "unspecified-high": {
-      "model": "aicodewith/claude-opus-4-5-20251101"
+      "model": "aicodewith/claude-opus-4-5-20251101",
+      "variant": "max"
     },
     "writing": {
       "model": "aicodewith/gemini-3-pro"
