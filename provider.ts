@@ -63,7 +63,9 @@ export function createAicodewith(options: AicodewithProviderSettings = {}): Aico
   })
 
   const google = createGoogleGenerativeAI({
-    apiKey: options.google?.apiKey ?? options.apiKey,
+    // Always pass apiKey to prevent SDK from reading GOOGLE_API_KEY env var
+    // The actual key is set in the fetch hook (index.ts)
+    apiKey: options.google?.apiKey ?? options.apiKey ?? "placeholder-key-replaced-by-fetch-hook",
     baseURL: options.google?.baseURL,
     headers: options.google?.headers ?? options.headers,
     fetch: options.fetch,
