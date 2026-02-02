@@ -62,8 +62,7 @@
       "model": "aicodewith/claude-opus-4-5-20251101"
     },
     "artistry": {
-      "model": "aicodewith/gemini-3-pro",
-      "variant": "max"
+      "model": "aicodewith/gemini-3-pro"
     },
     "quick": {
       "model": "aicodewith/claude-haiku-4-5-20251001"
@@ -72,8 +71,7 @@
       "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "unspecified-high": {
-      "model": "aicodewith/claude-opus-4-5-20251101",
-      "variant": "max"
+      "model": "aicodewith/claude-opus-4-5-20251101"
     },
     "writing": {
       "model": "aicodewith/gemini-3-pro"
