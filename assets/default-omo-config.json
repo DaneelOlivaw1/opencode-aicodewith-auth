@@ -4,6 +4,9 @@
     "sisyphus": {
       "model": "aicodewith/claude-opus-4-5-20251101"
     },
+    "hephaestus": {
+      "model": "aicodewith/gpt-5.2-codex"
+    },
     "oracle": {
       "model": "aicodewith/gpt-5.2"
     },
@@ -55,17 +58,16 @@
       "model": "aicodewith/gemini-3-pro"
     },
     "ultrabrain": {
-      "model": "aicodewith/gpt-5.2-codex",
-      "variant": "xhigh"
+      "model": "aicodewith/gpt-5.2-codex"
     },
     "deep": {
-      "model": "aicodewith/claude-opus-4-5-20251101"
+      "model": "aicodewith/gpt-5.2-codex"
     },
     "artistry": {
       "model": "aicodewith/gemini-3-pro"
     },
     "quick": {
-      "model": "aicodewith/claude-haiku-4-5-20251001"
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "unspecified-low": {
       "model": "aicodewith/claude-sonnet-4-5-20250929"
