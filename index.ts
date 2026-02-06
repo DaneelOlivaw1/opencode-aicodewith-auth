@@ -23,6 +23,7 @@ import {
   GEMINI_PRIVILEGED_USER_ID_ENV,
   GEMINI_USER_AGENT,
   HEADER_NAMES,
+  MODEL_MIGRATIONS,
 } from "./lib/constants"
 import {
   createAicodewithHeaders,
@@ -128,6 +129,12 @@ const applyProviderConfig = (config: Record<string, any>) => {
   const nextPlugins = ensurePluginEntry(config.plugin)
   if (nextPlugins !== config.plugin) {
     config.plugin = nextPlugins
+    changed = true
+  }
+
+  // Migrate deprecated model in config.model
+  if (config.model && MODEL_MIGRATIONS[config.model]) {
+    config.model = MODEL_MIGRATIONS[config.model]
     changed = true
   }
 

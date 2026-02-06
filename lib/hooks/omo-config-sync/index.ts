@@ -10,12 +10,13 @@
  *    - User config doesn't exist → create with default value
  *    - User config exists with different model → keep user's (user customized)
  *    - User config exists with same model → no change
+ * 3. Migrate deprecated models (e.g., opus-4-5 → opus-4-6)
  */
 
 import { readFile, writeFile, access } from "node:fs/promises"
 import path from "node:path"
 import os from "node:os"
-import { PROVIDER_ID } from "../../constants"
+import { PROVIDER_ID, MODEL_MIGRATIONS } from "../../constants"
 
 const PACKAGE_NAME = "opencode-aicodewith-auth"
 const OMO_CONFIG_FILENAME = "oh-my-opencode.json"
@@ -97,6 +98,20 @@ const syncAgentsAndCategories = (
   }
   if (!userConfig.categories) {
     userConfig.categories = {}
+  }
+
+  // Migrate deprecated models in existing config
+  for (const agent of Object.values(userConfig.agents)) {
+    if (agent.model && MODEL_MIGRATIONS[agent.model]) {
+      agent.model = MODEL_MIGRATIONS[agent.model]
+      changed = true
+    }
+  }
+  for (const category of Object.values(userConfig.categories)) {
+    if (category.model && MODEL_MIGRATIONS[category.model]) {
+      category.model = MODEL_MIGRATIONS[category.model]
+      changed = true
+    }
   }
 
   if (defaultConfig.agents) {
