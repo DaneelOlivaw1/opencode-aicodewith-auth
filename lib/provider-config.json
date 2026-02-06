@@ -17,8 +17,8 @@
       "limit": { "context": 200000, "output": 64000 },
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "claude-opus-4-5-20251101": {
-      "name": "Claude Opus 4.5",
+    "claude-opus-4-6-20260205": {
+      "name": "Claude Opus 4",
       "limit": { "context": 200000, "output": 64000 },
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
@@ -27,8 +27,8 @@
       "limit": { "context": 200000, "output": 64000 },
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },
-    "claude-opus-4-5-20251101-third-party": {
-      "name": "Claude Opus 4.5 (third party)",
+    "claude-opus-4-6-20260205-third-party": {
+      "name": "Claude Opus 4 (third party)",
       "limit": { "context": 200000, "output": 64000 },
       "modalities": { "input": ["text", "image"], "output": ["text"] }
     },

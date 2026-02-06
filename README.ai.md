@@ -201,7 +201,7 @@ If the output is NOT `https://registry.npmjs.org/` (e.g., shows taobao, cnpm, or
 > - `gpt-5.2-codex`
 > - `gpt-5.2`
 > - `claude-sonnet-4-5-20250929
-> - `claude-opus-4-5-20251101
+> - `claude-opus-4-6-20260205
 > - `gemini-3-pro`
 >
 > 测试命令: `opencode --model gpt-5.2-codex`"
@@ -213,7 +213,7 @@ If the output is NOT `https://registry.npmjs.org/` (e.g., shows taobao, cnpm, or
 > - `gpt-5.2-codex`
 > - `gpt-5.2`
 > - `claude-sonnet-4-5-20250929
-> - `claude-opus-4-5-20251101
+> - `claude-opus-4-6-20260205
 > - `gemini-3-pro`
 >
 > 测试命令: `opencode --model gpt-5.2-codex`

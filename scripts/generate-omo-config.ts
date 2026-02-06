@@ -16,7 +16,7 @@ const PROVIDER_ID = "aicodewith"
 
 // Model mapping from OMO models to aicodewith models
 const MODEL_MAP: Record<string, string> = {
-  "claude-opus-4-5": `${PROVIDER_ID}/claude-opus-4-5-20251101`,
+  "claude-opus-4-5": `${PROVIDER_ID}/claude-opus-4-6-20260205`,
   "claude-sonnet-4-5": `${PROVIDER_ID}/claude-sonnet-4-5-20250929`,
   "claude-sonnet-4": `${PROVIDER_ID}/claude-sonnet-4-5-20250929`,
   "claude-haiku-4-5": `${PROVIDER_ID}/claude-sonnet-4-5-20250929`, // No haiku, use sonnet
@@ -97,7 +97,7 @@ async function generateConfig(): Promise<void> {
       // Default mapping based on agent name
       let model = `${PROVIDER_ID}/claude-sonnet-4-5-20250929`
       if (name === "build" || name === "plan" || name === "OpenCode-Builder") {
-        model = `${PROVIDER_ID}/claude-opus-4-5-20251101`
+        model = `${PROVIDER_ID}/claude-opus-4-6-20260205`
       } else if (name === "frontend-ui-ux-engineer" || name === "document-writer") {
         model = `${PROVIDER_ID}/gemini-3-pro`
       }

@@ -133,7 +133,7 @@ cat ~/.config/opencode/oh-my-opencode.json
 
 | 模型 | 擅长领域 |
 |-----|---------|
-| `aicodewith/claude-opus-4-5-20251101` | 最强推理能力，适合主编排、复杂决策 |
+| `aicodewith/claude-opus-4-6-20260205` | 最强推理能力，适合主编排、复杂决策 |
 | `aicodewith/gpt-5.2` | 架构设计、逻辑推理、代码审查 |
 | `aicodewith/gemini-3-pro` | 前端 UI/UX、创意任务、视觉相关 |
 | `aicodewith/claude-sonnet-4-5-20250929` | 通用任务、文档、探索、杂活 |
@@ -145,7 +145,7 @@ cat ~/.config/opencode/oh-my-opencode.json
 1. 设置 `"google_auth": false`（禁用内置 Google 认证）
 2. 遍历 `agents` 对象中的**每一个 agent**
 3. **根据每个 agent 的名称和角色描述，选择最合适的 AICodewith 模型：**
-   - 主编排 agent（如 `Sisyphus`）→ `aicodewith/claude-opus-4-5-20251101`
+   - 主编排 agent（如 `Sisyphus`）→ `aicodewith/claude-opus-4-6-20260205`
    - 架构/审查/策略相关 agent（如 `oracle`）→ `aicodewith/gpt-5.2`
    - 前端/UI/UX/视觉相关 agent（如 `frontend-ui-ux-engineer`）→ `aicodewith/gemini-3-pro`
    - 其他通用 agent → `aicodewith/claude-sonnet-4-5-20250929`
@@ -162,7 +162,7 @@ cat ~/.config/opencode/oh-my-opencode.json
   "google_auth": false,
   "agents": {
     "Sisyphus": {
-      "model": "aicodewith/claude-opus-4-5-20251101"
+      "model": "aicodewith/claude-opus-4-6-20260205"
     },
     "oracle": {
       "model": "aicodewith/gpt-5.2"
@@ -294,6 +294,6 @@ npm config set registry https://registry.npmjs.org/
 
 ## 成功标志
 
-1. 运行 `opencode --model aicodewith/claude-opus-4-5-20251101` 正常启动
+1. 运行 `opencode --model aicodewith/claude-opus-4-6-20260205` 正常启动
 2. 使用 `ultrawork` 关键词触发 Sisyphus 编排多个 agents
 3. 只需一个 AICodewith 账号，无需其他订阅
