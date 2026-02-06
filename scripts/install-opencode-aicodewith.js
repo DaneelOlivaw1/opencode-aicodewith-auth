@@ -1,34 +1,31 @@
 #!/usr/bin/env node
+/**
+ * @file scripts/install-opencode-aicodewith.js
+ * @description Post-install script to configure opencode.json
+ *
+ * NOTE: This script imports from lib/models.ts for model definitions
+ */
 
-import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
+import {
+  PROVIDER_ID,
+  generateInstallScriptModels,
+  getDefaultModel,
+  getAllModelIds,
+} from "../lib/models.ts";
 
 const PACKAGE_NAME = "opencode-aicodewith-auth";
-const PROVIDER_ID = "aicodewith";
 const PROVIDER_NAME = "AICodewith";
 const PLUGIN_ENTRY = new URL("../index.ts", import.meta.url).href;
 const PROVIDER_NPM = new URL("../provider.ts", import.meta.url).href;
 const DEFAULT_API = "https://api.openai.com/v1";
 const DEFAULT_ENV = ["AICODEWITH_API_KEY"];
 
-const IMAGE_MODALITIES = { input: ["text", "image"], output: ["text"] };
-
-const MODEL_CONFIGS = {
-  "gpt-5.2-codex": { name: "GPT-5.2 Codex", modalities: IMAGE_MODALITIES },
-  "gpt-5.2": { name: "GPT-5.2", modalities: IMAGE_MODALITIES },
-  "claude-sonnet-4-5-20250929": { name: "Claude Sonnet 4.5", modalities: IMAGE_MODALITIES },
-  "claude-opus-4-6-20260205": { name: "Claude Opus 4", modalities: IMAGE_MODALITIES },
-  "claude-sonnet-4-5-20250929-third-party": { name: "Claude Sonnet 4.5 (third party)", modalities: IMAGE_MODALITIES },
-  "claude-opus-4-6-20260205-third-party": { name: "Claude Opus 4 (third party)", modalities: IMAGE_MODALITIES },
-  "gemini-3-pro": { name: "Gemini 3 Pro", modalities: IMAGE_MODALITIES },
-};
-
-const DEFAULT_MODEL = "aicodewith/claude-opus-4-6-20260205-third-party";
-
-const ALLOWED_MODEL_IDS = Object.keys(MODEL_CONFIGS);
-const ALLOWED_MODEL_SET = new Set(ALLOWED_MODEL_IDS);
+const MODEL_CONFIGS = generateInstallScriptModels();
+const DEFAULT_MODEL = getDefaultModel();
+const ALLOWED_MODEL_IDS = getAllModelIds();
 
 const home = process.env.OPENCODE_TEST_HOME || os.homedir();
 const configRoot = process.env.XDG_CONFIG_HOME || path.join(home, ".config");

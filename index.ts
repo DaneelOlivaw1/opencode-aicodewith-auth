@@ -15,7 +15,6 @@ import os from "node:os"
 import {
   AUTH_METHOD_LABEL,
   CODEX_BASE_URL,
-  PROVIDER_ID,
   AICODEWITH_ANTHROPIC_BASE_URL,
   AICODEWITH_LITE_URL,
   AICODEWITH_GEMINI_BASE_URL,
@@ -23,8 +22,8 @@ import {
   GEMINI_PRIVILEGED_USER_ID_ENV,
   GEMINI_USER_AGENT,
   HEADER_NAMES,
-  MODEL_MIGRATIONS,
 } from "./lib/constants"
+import { PROVIDER_ID, MODEL_MIGRATIONS, generateProviderConfig } from "./lib/models"
 import {
   createAicodewithHeaders,
   extractRequestUrl,
@@ -36,7 +35,6 @@ import { transformClaudeRequest, transformClaudeResponse } from "./lib/request/c
 import { createAutoUpdateHook } from "./lib/hooks/auto-update"
 import { syncOmoConfig } from "./lib/hooks/omo-config-sync"
 import { saveRawResponse, SAVE_RAW_RESPONSE_ENABLED } from "./lib/logger"
-import STANDARD_PROVIDER_CONFIG from "./lib/provider-config.json"
 
 const CODEX_MODEL_PREFIXES = ["gpt-", "codex"]
 const PACKAGE_NAME = "opencode-aicodewith-auth"
@@ -109,7 +107,7 @@ const ensurePluginEntry = (list: unknown) => {
 }
 
 const buildStandardProviderConfig = () => ({
-  ...STANDARD_PROVIDER_CONFIG,
+  ...generateProviderConfig(),
   npm: PROVIDER_NPM,
 })
 

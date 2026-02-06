@@ -4,32 +4,11 @@
     "sisyphus": {
       "model": "aicodewith/claude-opus-4-6-20260205"
     },
-    "hephaestus": {
-      "model": "aicodewith/gpt-5.2-codex"
-    },
-    "oracle": {
-      "model": "aicodewith/gpt-5.2"
-    },
-    "librarian": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
-    },
-    "explore": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
-    },
-    "multimodal-looker": {
-      "model": "aicodewith/gemini-3-pro"
-    },
     "prometheus": {
       "model": "aicodewith/claude-opus-4-6-20260205"
     },
     "metis": {
       "model": "aicodewith/claude-opus-4-6-20260205"
-    },
-    "momus": {
-      "model": "aicodewith/gpt-5.2"
-    },
-    "atlas": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
     },
     "build": {
       "model": "aicodewith/claude-opus-4-6-20260205"
@@ -37,20 +16,41 @@
     "plan": {
       "model": "aicodewith/claude-opus-4-6-20260205"
     },
-    "sisyphus-junior": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
-    },
     "OpenCode-Builder": {
       "model": "aicodewith/claude-opus-4-6-20260205"
     },
-    "general": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    "hephaestus": {
+      "model": "aicodewith/gpt-5.2-codex"
+    },
+    "oracle": {
+      "model": "aicodewith/gpt-5.2"
+    },
+    "momus": {
+      "model": "aicodewith/gpt-5.2"
+    },
+    "multimodal-looker": {
+      "model": "aicodewith/gemini-3-pro"
     },
     "frontend-ui-ux-engineer": {
       "model": "aicodewith/gemini-3-pro"
     },
     "document-writer": {
       "model": "aicodewith/gemini-3-pro"
+    },
+    "librarian": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "explore": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "atlas": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "sisyphus-junior": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
+    },
+    "general": {
+      "model": "aicodewith/claude-sonnet-4-5-20250929"
     }
   },
   "categories": {
@@ -58,7 +58,8 @@
       "model": "aicodewith/gemini-3-pro"
     },
     "ultrabrain": {
-      "model": "aicodewith/gpt-5.2-codex"
+      "model": "aicodewith/gpt-5.2-codex",
+      "variant": "xhigh"
     },
     "deep": {
       "model": "aicodewith/gpt-5.2-codex"

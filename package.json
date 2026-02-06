@@ -1,6 +1,6 @@
 {
   "name": "opencode-aicodewith-auth",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "description": "OpenCode plugin for AICodewith authentication - Access GPT-5.2, Claude, and Gemini models through AICodewith API",
   "type": "module",
   "main": "dist/index.js",
@@ -21,6 +21,7 @@
   "scripts": {
     "build": "bun build index.ts provider.ts --outdir dist --target bun --format esm --external @ai-sdk/anthropic --external @ai-sdk/google --external @ai-sdk/openai --external @ai-sdk/provider --external @ai-sdk/provider-utils --external @opencode-ai/plugin --external @opencode-ai/sdk",
     "clean": "rm -rf dist",
+    "generate": "bun ./scripts/generate-configs.ts",
     "prepublishOnly": "bun run clean && bun run build",
     "typecheck": "bunx tsc --noEmit",
     "postinstall": "bun ./scripts/install-opencode-aicodewith.js"

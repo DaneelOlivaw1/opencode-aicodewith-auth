@@ -16,7 +16,7 @@
 import { readFile, writeFile, access } from "node:fs/promises"
 import path from "node:path"
 import os from "node:os"
-import { PROVIDER_ID, MODEL_MIGRATIONS } from "../../constants"
+import { PROVIDER_ID, MODEL_MIGRATIONS } from "../../models"
 
 const PACKAGE_NAME = "opencode-aicodewith-auth"
 const OMO_CONFIG_FILENAME = "oh-my-opencode.json"
