@@ -18,7 +18,7 @@ import {
 import type { ConfigOptions, InputItem, ReasoningConfig, RequestBody } from "../types"
 
 export function normalizeModel(model: string | undefined): string {
-  if (!model) return "gpt-5.2-codex"
+  if (!model) return "gpt-5.3-codex"
 
   const modelId = model.includes("/") ? model.split("/").pop()! : model
 
@@ -30,10 +30,10 @@ export function normalizeModel(model: string | undefined): string {
   const normalized = modelId.toLowerCase()
 
   if (
-    normalized.includes("gpt-5.2-codex") ||
-    normalized.includes("gpt 5.2 codex")
+    normalized.includes("gpt-5.3-codex") ||
+    normalized.includes("gpt 5.3 codex")
   ) {
-    return "gpt-5.2-codex"
+    return "gpt-5.3-codex"
   }
 
   if (normalized.includes("gpt-5.2") || normalized.includes("gpt 5.2")) {
@@ -41,10 +41,10 @@ export function normalizeModel(model: string | undefined): string {
   }
 
   if (normalized.includes("codex")) {
-    return "gpt-5.2-codex"
+    return "gpt-5.3-codex"
   }
 
-  return "gpt-5.2-codex"
+  return "gpt-5.3-codex"
 }
 
 function resolveReasoningConfig(modelName: string, body: RequestBody): ReasoningConfig {
@@ -141,15 +141,14 @@ export function getReasoningConfig(
 ): ReasoningConfig {
   const normalizedName = modelName?.toLowerCase() ?? ""
 
-  const isGpt52Codex =
-    normalizedName.includes("gpt-5.2-codex") ||
-    normalizedName.includes("gpt 5.2 codex")
+  const isGpt53Codex =
+    normalizedName.includes("gpt-5.3-codex") ||
+    normalizedName.includes("gpt 5.3 codex")
 
   const isGpt52General =
-    (normalizedName.includes("gpt-5.2") || normalizedName.includes("gpt 5.2")) &&
-    !isGpt52Codex
+    (normalizedName.includes("gpt-5.2") || normalizedName.includes("gpt 5.2"))
 
-  const supportsXhigh = isGpt52General || isGpt52Codex
+  const supportsXhigh = isGpt52General || isGpt53Codex
   const supportsNone = isGpt52General
 
   const defaultEffort: ReasoningConfig["effort"] = supportsXhigh ? "high" : "medium"

@@ -126,11 +126,12 @@ describe("Model Alias Resolution E2E", () => {
   it("resolves model aliases correctly via model-map", async () => {
     const { getNormalizedModel } = await import("../../lib/request/helpers/model-map")
     
+    expect(getNormalizedModel("gpt-5.3-codex")).toBe("gpt-5.3-codex")
+    expect(getNormalizedModel("gpt 5.3 codex")).toBe("gpt-5.3-codex")
+    expect(getNormalizedModel("GPT-5.3-CODEX")).toBe("gpt-5.3-codex")
+    expect(getNormalizedModel("gpt-5.3-codex-high")).toBe("gpt-5.3-codex")
     expect(getNormalizedModel("gpt-5.2")).toBe("gpt-5.2")
     expect(getNormalizedModel("gpt 5.2")).toBe("gpt-5.2")
-    expect(getNormalizedModel("GPT-5.2")).toBe("gpt-5.2")
-    expect(getNormalizedModel("gpt-5.2-high")).toBe("gpt-5.2")
-    expect(getNormalizedModel("gpt-5.2-xhigh")).toBe("gpt-5.2")
   })
 })
 
@@ -178,6 +179,7 @@ describe("User Config Sync E2E", () => {
     expect(result.changes).toContain("provider_updated")
     
     const aicodewithConfig = config.provider.aicodewith
+    expect(aicodewithConfig.models["gpt-5.3-codex"]).toBeDefined()
     expect(aicodewithConfig.models["gpt-5.2"]).toBeDefined()
     expect(aicodewithConfig.models["gpt-5.0-old"]).toBeUndefined()
     

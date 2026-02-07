@@ -48,14 +48,14 @@ export const PROVIDER_ID = "aicodewith"
 export const MODELS: ModelDefinition[] = [
   // GPT Models
   {
-    id: "gpt-5.2-codex",
+    id: "gpt-5.3-codex",
     family: "codex",
-    displayName: "GPT-5.2 Codex",
-    version: "5.2",
+    displayName: "GPT-5.3 Codex",
+    version: "5.3",
     limit: { context: 400000, output: 128000 },
     modalities: { input: ["text", "image"], output: ["text"] },
     reasoning: "xhigh",
-    aliases: ["gpt-5.2-codex", "gpt 5.2 codex", "codex"],
+    aliases: ["gpt-5.3-codex", "gpt 5.3 codex", "codex"],
   },
   {
     id: "gpt-5.2",
@@ -70,6 +70,17 @@ export const MODELS: ModelDefinition[] = [
 
   // Deprecated GPT Models (for migration)
   {
+    id: "gpt-5.2-codex",
+    family: "codex",
+    displayName: "GPT-5.2 Codex (deprecated)",
+    version: "5.2",
+    limit: { context: 400000, output: 128000 },
+    modalities: { input: ["text", "image"], output: ["text"] },
+    reasoning: "xhigh",
+    deprecated: true,
+    replacedBy: "gpt-5.3-codex",
+  },
+  {
     id: "gpt-5.1-codex",
     family: "codex",
     displayName: "GPT-5.1 Codex (deprecated)",
@@ -78,7 +89,7 @@ export const MODELS: ModelDefinition[] = [
     modalities: { input: ["text", "image"], output: ["text"] },
     reasoning: "full",
     deprecated: true,
-    replacedBy: "gpt-5.2-codex",
+    replacedBy: "gpt-5.3-codex",
   },
   {
     id: "gpt-5.1-codex-max",
@@ -89,7 +100,7 @@ export const MODELS: ModelDefinition[] = [
     modalities: { input: ["text", "image"], output: ["text"] },
     reasoning: "xhigh",
     deprecated: true,
-    replacedBy: "gpt-5.2-codex",
+    replacedBy: "gpt-5.3-codex",
   },
   {
     id: "gpt-5.1-codex-mini",
@@ -100,7 +111,7 @@ export const MODELS: ModelDefinition[] = [
     modalities: { input: ["text", "image"], output: ["text"] },
     reasoning: "basic",
     deprecated: true,
-    replacedBy: "gpt-5.2-codex",
+    replacedBy: "gpt-5.3-codex",
   },
   {
     id: "gpt-5.1",

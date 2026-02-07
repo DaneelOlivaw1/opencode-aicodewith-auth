@@ -55,6 +55,7 @@ describe("Model Registry", () => {
     it("includes current models", () => {
       const active = getActiveModels()
       const ids = active.map(m => m.id)
+      expect(ids).toContain("gpt-5.3-codex")
       expect(ids).toContain("gpt-5.2")
       expect(ids).toContain("claude-opus-4-6-20260205")
       expect(ids).toContain("gemini-3-pro")
@@ -76,8 +77,8 @@ describe("Model Registry", () => {
 
   describe("getModelById", () => {
     it("finds model by exact id", () => {
-      const model = getModelById("gpt-5.2")
-      expect(model?.displayName).toBe("GPT-5.2")
+      const model = getModelById("gpt-5.3-codex")
+      expect(model?.displayName).toBe("GPT-5.3 Codex")
     })
 
     it("returns undefined for unknown id", () => {
@@ -87,23 +88,23 @@ describe("Model Registry", () => {
 
   describe("getModelByAlias", () => {
     it("finds model by id", () => {
-      const model = getModelByAlias("gpt-5.2")
-      expect(model?.id).toBe("gpt-5.2")
+      const model = getModelByAlias("gpt-5.3-codex")
+      expect(model?.id).toBe("gpt-5.3-codex")
     })
 
     it("finds model by alias", () => {
-      const model = getModelByAlias("gpt 5.2")
-      expect(model?.id).toBe("gpt-5.2")
+      const model = getModelByAlias("gpt 5.3 codex")
+      expect(model?.id).toBe("gpt-5.3-codex")
     })
 
     it("is case insensitive", () => {
-      const model = getModelByAlias("GPT-5.2")
-      expect(model?.id).toBe("gpt-5.2")
+      const model = getModelByAlias("GPT-5.3-CODEX")
+      expect(model?.id).toBe("gpt-5.3-codex")
     })
 
     it("trims whitespace", () => {
-      const model = getModelByAlias("  gpt-5.2  ")
-      expect(model?.id).toBe("gpt-5.2")
+      const model = getModelByAlias("  gpt-5.3-codex  ")
+      expect(model?.id).toBe("gpt-5.3-codex")
     })
   })
 
@@ -164,29 +165,29 @@ describe("Model Registry", () => {
 
     it("model config has correct structure", () => {
       const config = buildProviderConfig()
-      const gpt52 = config.models["gpt-5.2"]
-      expect(gpt52.name).toBe("GPT-5.2")
-      expect(gpt52.limit.context).toBe(400000)
-      expect(gpt52.limit.output).toBe(128000)
-      expect(gpt52.modalities.input).toContain("text")
+      const gpt53codex = config.models["gpt-5.3-codex"]
+      expect(gpt53codex.name).toBe("GPT-5.3 Codex")
+      expect(gpt53codex.limit.context).toBe(400000)
+      expect(gpt53codex.limit.output).toBe(128000)
+      expect(gpt53codex.modalities.input).toContain("text")
     })
   })
 
   describe("buildAliasMap", () => {
     it("maps model id to itself", () => {
       const map = buildAliasMap()
-      expect(map["gpt-5.2"]).toBe("gpt-5.2")
+      expect(map["gpt-5.3-codex"]).toBe("gpt-5.3-codex")
     })
 
     it("maps aliases to model id", () => {
       const map = buildAliasMap()
-      expect(map["gpt 5.2"]).toBe("gpt-5.2")
+      expect(map["gpt 5.3 codex"]).toBe("gpt-5.3-codex")
     })
 
     it("maps effort variants to base model", () => {
       const map = buildAliasMap()
-      expect(map["gpt-5.2-high"]).toBe("gpt-5.2")
-      expect(map["gpt-5.2-xhigh"]).toBe("gpt-5.2")
+      expect(map["gpt-5.3-codex-high"]).toBe("gpt-5.3-codex")
+      expect(map["gpt-5.3-codex-xhigh"]).toBe("gpt-5.3-codex")
     })
 
     it("aliases are lowercase", () => {

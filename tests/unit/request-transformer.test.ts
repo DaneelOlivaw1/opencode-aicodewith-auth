@@ -7,13 +7,15 @@ import {
 } from "../../lib/request/request-transformer"
 
 describe("normalizeModel", () => {
-  describe("GPT-5.2 models", () => {
-    it("normalizes gpt-5.2-codex variants", () => {
-      expect(normalizeModel("gpt-5.2-codex")).toBe("gpt-5.2-codex")
-      expect(normalizeModel("GPT-5.2-CODEX")).toBe("gpt-5.2-codex")
-      expect(normalizeModel("gpt 5.2 codex")).toBe("gpt-5.2-codex")
+  describe("GPT-5.3 Codex models", () => {
+    it("normalizes gpt-5.3-codex variants", () => {
+      expect(normalizeModel("gpt-5.3-codex")).toBe("gpt-5.3-codex")
+      expect(normalizeModel("GPT-5.3-CODEX")).toBe("gpt-5.3-codex")
+      expect(normalizeModel("gpt 5.3 codex")).toBe("gpt-5.3-codex")
     })
+  })
 
+  describe("GPT-5.2 models", () => {
     it("normalizes gpt-5.2 base model", () => {
       expect(normalizeModel("gpt-5.2")).toBe("gpt-5.2")
       expect(normalizeModel("GPT-5.2")).toBe("gpt-5.2")
@@ -23,7 +25,7 @@ describe("normalizeModel", () => {
 
   describe("provider prefix handling", () => {
     it("strips aicodewith/ prefix", () => {
-      expect(normalizeModel("aicodewith/gpt-5.2-codex")).toBe("gpt-5.2-codex")
+      expect(normalizeModel("aicodewith/gpt-5.3-codex")).toBe("gpt-5.3-codex")
       expect(normalizeModel("aicodewith/gpt-5.2")).toBe("gpt-5.2")
     })
 
@@ -33,12 +35,12 @@ describe("normalizeModel", () => {
   })
 
   describe("fallback behavior", () => {
-    it("returns gpt-5.2-codex for undefined", () => {
-      expect(normalizeModel(undefined)).toBe("gpt-5.2-codex")
+    it("returns gpt-5.3-codex for undefined", () => {
+      expect(normalizeModel(undefined)).toBe("gpt-5.3-codex")
     })
 
-    it("returns gpt-5.2-codex for generic codex", () => {
-      expect(normalizeModel("codex")).toBe("gpt-5.2-codex")
+    it("returns gpt-5.3-codex for generic codex", () => {
+      expect(normalizeModel("codex")).toBe("gpt-5.3-codex")
     })
   })
 })
@@ -85,8 +87,8 @@ describe("filterInput", () => {
 
 describe("getReasoningConfig", () => {
   describe("default effort levels", () => {
-    it("returns high for gpt-5.2-codex", () => {
-      const config = getReasoningConfig("gpt-5.2-codex")
+    it("returns high for gpt-5.3-codex", () => {
+      const config = getReasoningConfig("gpt-5.3-codex")
       expect(config.effort).toBe("high")
     })
 
@@ -114,8 +116,8 @@ describe("getReasoningConfig", () => {
       expect(config.effort).toBe("xhigh")
     })
 
-    it("allows xhigh for gpt-5.2-codex", () => {
-      const config = getReasoningConfig("gpt-5.2-codex", { reasoningEffort: "xhigh" })
+    it("allows xhigh for gpt-5.3-codex", () => {
+      const config = getReasoningConfig("gpt-5.3-codex", { reasoningEffort: "xhigh" })
       expect(config.effort).toBe("xhigh")
     })
 
