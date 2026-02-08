@@ -68,10 +68,18 @@ async function testModel(
     })
     
     if (!promptRes.ok) {
-      throw new Error(`Prompt failed: ${promptRes.status} ${await promptRes.text()}`)
+      const errorText = await promptRes.text()
+      throw new Error(`Prompt failed: ${promptRes.status} ${errorText}`)
     }
     
-    const { data: response } = await promptRes.json()
+    const promptResponseText = await promptRes.text()
+    let response
+    try {
+      const parsed = JSON.parse(promptResponseText)
+      response = parsed.data
+    } catch (e) {
+      throw new Error(`Failed to parse JSON response: ${promptResponseText.slice(0, 200)}`)
+    }
     const assistantMessage = response?.parts?.find((p: any) => p.type === "text")
     const responseText = assistantMessage?.text || "(no text response)"
     
