@@ -16,15 +16,8 @@ COPY . .
 CMD ["bun", "tests/docker/e2e-test.ts"]
 
 FROM base AS smoke
-# Install OpenCode CLI from official release (required by createOpencodeServer)
-RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSL https://github.com/opencode-ai/opencode/releases/latest/download/opencode-linux-x86_64.tar.gz -o /tmp/opencode.tar.gz && \
-    tar -xzf /tmp/opencode.tar.gz -C /usr/local/bin && \
-    chmod +x /usr/local/bin/opencode && \
-    rm /tmp/opencode.tar.gz
-RUN opencode --version
-
 # Clone oh-my-opencode for build script
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 RUN git clone --depth 1 https://github.com/code-yeongyu/oh-my-opencode.git /tmp/oh-my-opencode
 ENV OMO_PATH=/tmp/oh-my-opencode
 

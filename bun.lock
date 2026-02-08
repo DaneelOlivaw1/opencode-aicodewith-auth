@@ -12,6 +12,7 @@
         "@ai-sdk/provider-utils": "3.0.19",
       },
       "devDependencies": {
+        "@opencode-ai/sdk": "^1.1.53",
         "@types/node": "^22.19.8",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18",
@@ -88,7 +89,7 @@
 
     "@opencode-ai/plugin": ["@opencode-ai/plugin@1.1.4", "", { "dependencies": { "@opencode-ai/sdk": "1.1.4", "zod": "4.1.8" } }, "sha512-RA7KsC6uoqjwJturbTLX7cq+XYet3XA2tRbsh5JTEm98wH7xuQREbkCiFUqk97nbV+BgCf/ex8MyF6P/B0wFCA=="],
 
-    "@opencode-ai/sdk": ["@opencode-ai/sdk@1.1.4", "", {}, "sha512-fhQH1U3b2K9HDTTJ6Ia7q4FoBwLlrsDf5pTF/D11FntOJPkZoFAhRBznjc8rwCqrGeDzg4YFs+68oLqWgCL/iA=="],
+    "@opencode-ai/sdk": ["@opencode-ai/sdk@1.1.53", "", {}, "sha512-RUIVnPOP1CyyU32FrOOYuE7Ge51lOBuhaFp2NSX98ncApT7ffoNetmwzqrhOiJQgZB1KrbCHLYOCK6AZfacxag=="],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.57.1", "", { "os": "android", "cpu": "arm" }, "sha512-A6ehUVSiSaaliTxai040ZpZ2zTevHYbvu/lDoeAteHI8QnaosIzm4qwtezfRg1jOYaUmnzLX1AOD6Z+UJjtifg=="],
 
@@ -229,6 +230,8 @@
     "zod": ["zod@4.3.5", "", {}, "sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g=="],
 
     "@ai-sdk/openai/@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.17", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.6" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-TR3Gs4I3Tym4Ll+EPdzRdvo/rc8Js6c4nVhFLuvGLX/Y4V9ZcQMa/HTiYsHEgmYrf1zVi6Q145UEZUfleOwOjw=="],
+
+    "@opencode-ai/plugin/@opencode-ai/sdk": ["@opencode-ai/sdk@1.1.4", "", {}, "sha512-fhQH1U3b2K9HDTTJ6Ia7q4FoBwLlrsDf5pTF/D11FntOJPkZoFAhRBznjc8rwCqrGeDzg4YFs+68oLqWgCL/iA=="],
 
     "@opencode-ai/plugin/zod": ["zod@4.1.8", "", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
   }

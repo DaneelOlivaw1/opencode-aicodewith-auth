@@ -5,6 +5,21 @@ services:
       dockerfile: Dockerfile.test
       target: e2e
 
+  # OpenCode HTTP server for smoke tests
+  opencode-server:
+    image: ghcr.io/opencode-ai/opencode:latest
+    command: ["serve", "--port=4096", "--hostname=0.0.0.0"]
+    ports:
+      - "4096:4096"
+    volumes:
+      - ./dist:/app/dist:ro
+      - ./assets:/app/assets:ro
+    environment:
+      - OPENCODE_CONFIG=/app/opencode-config.json
+    configs:
+      - source: opencode_config
+        target: /app/opencode-config.json
+
   smoke:
     build:
       context: .
@@ -12,7 +27,10 @@ services:
       target: smoke
     environment:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
-    network_mode: host
+      - OPENCODE_SERVER_URL=http://opencode-server:4096
+    depends_on:
+      - opencode-server
+    network_mode: bridge
 
   smoke-agents:
     build:
@@ -21,5 +39,16 @@ services:
       target: smoke
     environment:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
-    network_mode: host
+      - OPENCODE_SERVER_URL=http://opencode-server:4096
+    depends_on:
+      - opencode-server
+    network_mode: bridge
     command: ["bun", "tests/docker/smoke-test-agents.ts"]
+
+configs:
+  opencode_config:
+    content: |
+      {
+        "$schema": "https://opencode.ai/config.json",
+        "plugin": ["opencode-aicodewith-auth"]
+      }
