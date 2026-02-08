@@ -18,8 +18,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.test
-      target: smoke
+      target: smoke-agents
     environment:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
-      - OPENCODE_SERVER_URL=http://127.0.0.1:4096
-    command: ["sh", "-c", "opencode serve --port=4096 --hostname=127.0.0.1 & sleep 5 && bun tests/docker/smoke-test-agents.ts"]

@@ -57,3 +57,15 @@ RUN mkdir -p /root/.local/share/opencode/plugins/opencode-aicodewith-auth && \
 
 # Run smoke test (SDK starts its own server)
 CMD ["bun", "tests/docker/smoke-test.ts"]
+
+FROM smoke AS smoke-agents
+# Build oh-my-opencode plugin
+RUN cd /tmp/oh-my-opencode && bun install && bun run build
+
+# Install oh-my-opencode plugin to OpenCode
+RUN mkdir -p /root/.local/share/opencode/plugins/oh-my-opencode && \
+    cp -r /tmp/oh-my-opencode/dist /root/.local/share/opencode/plugins/oh-my-opencode/ && \
+    cp /tmp/oh-my-opencode/package.json /root/.local/share/opencode/plugins/oh-my-opencode/
+
+# Run OMO agents smoke test (SDK starts its own server)
+CMD ["bun", "tests/docker/smoke-test-agents.ts"]
