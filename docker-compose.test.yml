@@ -5,17 +5,6 @@ services:
       dockerfile: Dockerfile.test
       target: e2e
 
-  # OpenCode HTTP server for smoke tests
-  opencode-server:
-    build:
-      context: .
-      dockerfile: Dockerfile.opencode
-    command: ["opencode", "serve", "--port=4096", "--hostname=0.0.0.0"]
-    ports:
-      - "4096:4096"
-    networks:
-      - test-network
-
   smoke:
     build:
       context: .
@@ -23,11 +12,7 @@ services:
       target: smoke
     environment:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
-      - OPENCODE_SERVER_URL=http://opencode-server:4096
-    depends_on:
-      - opencode-server
-    networks:
-      - test-network
+      - OPENCODE_SERVER_URL=http://127.0.0.1:4096
 
   smoke-agents:
     build:
@@ -36,13 +21,5 @@ services:
       target: smoke
     environment:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
-      - OPENCODE_SERVER_URL=http://opencode-server:4096
-    depends_on:
-      - opencode-server
-    networks:
-      - test-network
-    command: ["bun", "tests/docker/smoke-test-agents.ts"]
-
-networks:
-  test-network:
-    driver: bridge
+      - OPENCODE_SERVER_URL=http://127.0.0.1:4096
+    command: ["sh", "-c", "opencode serve --port=4096 --hostname=127.0.0.1 & sleep 5 && bun tests/docker/smoke-test-agents.ts"]

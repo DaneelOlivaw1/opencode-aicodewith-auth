@@ -16,12 +16,26 @@ COPY . .
 CMD ["bun", "tests/docker/e2e-test.ts"]
 
 FROM base AS smoke
-# Clone oh-my-opencode for build script
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+# Install OpenCode and git
+RUN apt-get update && apt-get install -y git curl ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://github.com/opencode-ai/opencode/releases/latest/download/opencode-linux-x86_64.tar.gz -o /tmp/opencode.tar.gz && \
+    tar -xzf /tmp/opencode.tar.gz -C /usr/local/bin && \
+    chmod +x /usr/local/bin/opencode && \
+    rm /tmp/opencode.tar.gz
+
+# Clone oh-my-opencode for build
 RUN git clone --depth 1 https://github.com/code-yeongyu/oh-my-opencode.git /tmp/oh-my-opencode
 ENV OMO_PATH=/tmp/oh-my-opencode
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
-CMD ["bun", "tests/docker/smoke-test.ts"]
+
+# Install plugin to OpenCode
+RUN mkdir -p /root/.local/share/opencode/plugins/opencode-aicodewith-auth && \
+    cp -r dist /root/.local/share/opencode/plugins/opencode-aicodewith-auth/ && \
+    cp -r assets /root/.local/share/opencode/plugins/opencode-aicodewith-auth/ && \
+    cp package.json /root/.local/share/opencode/plugins/opencode-aicodewith-auth/
+
+# Start OpenCode server in background and run tests
+CMD ["sh", "-c", "opencode serve --port=4096 --hostname=127.0.0.1 & sleep 5 && bun tests/docker/smoke-test.ts"]
