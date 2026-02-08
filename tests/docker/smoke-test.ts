@@ -8,6 +8,29 @@ interface TestResult {
   durationMs: number
 }
 
+async function waitForServer(baseUrl: string, maxRetries = 30): Promise<void> {
+  console.log(`⏳ Waiting for OpenCode server at ${baseUrl}...`)
+  
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(`${baseUrl}/health`, { method: "GET" })
+      if (res.ok) {
+        console.log(`✅ Server is ready!`)
+        return
+      }
+    } catch (e) {
+      // Server not ready yet
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    if ((i + 1) % 5 === 0) {
+      console.log(`   Still waiting... (${i + 1}/${maxRetries})`)
+    }
+  }
+  
+  throw new Error(`Server did not become ready after ${maxRetries} seconds`)
+}
+
 async function testModel(
   baseUrl: string,
   modelId: string
@@ -93,6 +116,9 @@ async function main() {
   activeModels.forEach(m => console.log(`  - ${m.id} (${m.displayName})`))
 
   try {
+    // Wait for server to be ready
+    await waitForServer(baseUrl)
+
     // Set API key
     console.log("\n🔑 Setting API key...")
     const authRes = await fetch(`${baseUrl}/v2/auth`, {

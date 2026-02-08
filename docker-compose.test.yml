@@ -13,17 +13,6 @@ services:
     command: ["opencode", "serve", "--port=4096", "--hostname=0.0.0.0"]
     ports:
       - "4096:4096"
-    environment:
-      - OPENCODE_CONFIG=/workspace/opencode-config.json
-    configs:
-      - source: opencode_config
-        target: /workspace/opencode-config.json
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4096/health"]
-      interval: 2s
-      timeout: 3s
-      retries: 10
-      start_period: 5s
     networks:
       - test-network
 
@@ -36,8 +25,7 @@ services:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
       - OPENCODE_SERVER_URL=http://opencode-server:4096
     depends_on:
-      opencode-server:
-        condition: service_healthy
+      - opencode-server
     networks:
       - test-network
 
@@ -50,8 +38,7 @@ services:
       - AICODEWITH_API_KEY=${AICODEWITH_API_KEY}
       - OPENCODE_SERVER_URL=http://opencode-server:4096
     depends_on:
-      opencode-server:
-        condition: service_healthy
+      - opencode-server
     networks:
       - test-network
     command: ["bun", "tests/docker/smoke-test-agents.ts"]
@@ -59,11 +46,3 @@ services:
 networks:
   test-network:
     driver: bridge
-
-configs:
-  opencode_config:
-    content: |
-      {
-        "$schema": "https://opencode.ai/config.json",
-        "plugin": ["opencode-aicodewith-auth"]
-      }
