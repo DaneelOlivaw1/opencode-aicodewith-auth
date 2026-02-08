@@ -15,21 +15,36 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 CMD ["bun", "tests/docker/e2e-test.ts"]
 
-FROM base AS smoke
-# Install OpenCode and git
-RUN apt-get update && apt-get install -y git curl ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSL https://github.com/opencode-ai/opencode/releases/latest/download/opencode-linux-x86_64.tar.gz -o /tmp/opencode.tar.gz && \
-    tar -xzf /tmp/opencode.tar.gz -C /usr/local/bin && \
-    chmod +x /usr/local/bin/opencode && \
-    rm /tmp/opencode.tar.gz
+FROM base AS smoke-builder
+WORKDIR /app
 
-# Clone oh-my-opencode for build
-RUN git clone --depth 1 https://github.com/code-yeongyu/oh-my-opencode.git /tmp/oh-my-opencode
+# Copy oh-my-opencode from e2e stage (avoid re-cloning)
+COPY --from=e2e /tmp/oh-my-opencode /tmp/oh-my-opencode
 ENV OMO_PATH=/tmp/oh-my-opencode
 
+# Install OpenCode via npm (1.x version with serve command)
+RUN bun install -g opencode-ai@latest
+
+# Build plugin
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
+
+FROM base AS smoke
+WORKDIR /app
+
+# Install OpenCode via npm
+RUN bun install -g opencode-ai@latest
+
+# Copy built plugin and oh-my-opencode from builder
+COPY --from=smoke-builder /tmp/oh-my-opencode /tmp/oh-my-opencode
+COPY --from=smoke-builder /app/dist ./dist
+COPY --from=smoke-builder /app/assets ./assets
+COPY --from=smoke-builder /app/package.json ./package.json
+COPY --from=deps /app/node_modules ./node_modules
+COPY tests ./tests
+
+ENV OMO_PATH=/tmp/oh-my-opencode
 
 # Install plugin to OpenCode
 RUN mkdir -p /root/.local/share/opencode/plugins/opencode-aicodewith-auth && \
