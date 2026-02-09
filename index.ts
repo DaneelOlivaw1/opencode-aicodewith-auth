@@ -428,8 +428,10 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
     "chat.params": async (input, output) => {
       if (input.model.providerID !== PROVIDER_ID) return
 
-      // Codex models: no special handling needed (store defaults to false via OpenCode core)
+      // Codex models: enable store for multi-turn reasoning continuity
       if (isCodexModel(input.model.id)) {
+        if (!output.options) output.options = {}
+        output.options.store = true
         return
       }
 
