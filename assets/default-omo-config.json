@@ -2,13 +2,16 @@
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   "agents": {
     "sisyphus": {
-      "model": "aicodewith/claude-opus-4-6-20260205"
+      "model": "aicodewith/claude-opus-4-6-20260205",
+      "variant": "max"
     },
     "hephaestus": {
-      "model": "aicodewith/gpt-5.3-codex"
+      "model": "aicodewith/gpt-5.3-codex",
+      "variant": "medium"
     },
     "oracle": {
-      "model": "aicodewith/gpt-5.2"
+      "model": "aicodewith/gpt-5.2",
+      "variant": "high"
     },
     "librarian": {
       "model": "aicodewith/claude-sonnet-4-5-20250929"
@@ -20,13 +23,16 @@
       "model": "aicodewith/gemini-3-pro"
     },
     "prometheus": {
-      "model": "aicodewith/claude-opus-4-6-20260205"
+      "model": "aicodewith/claude-opus-4-6-20260205",
+      "variant": "max"
     },
     "metis": {
-      "model": "aicodewith/claude-opus-4-6-20260205"
+      "model": "aicodewith/claude-opus-4-6-20260205",
+      "variant": "max"
     },
     "momus": {
-      "model": "aicodewith/gpt-5.2"
+      "model": "aicodewith/gpt-5.2",
+      "variant": "medium"
     },
     "atlas": {
       "model": "aicodewith/claude-sonnet-4-5-20250929"
@@ -58,13 +64,16 @@
       "model": "aicodewith/gemini-3-pro"
     },
     "ultrabrain": {
-      "model": "aicodewith/gpt-5.3-codex"
+      "model": "aicodewith/gpt-5.3-codex",
+      "variant": "high"
     },
     "deep": {
-      "model": "aicodewith/gpt-5.3-codex"
+      "model": "aicodewith/gpt-5.3-codex",
+      "variant": "medium"
     },
     "artistry": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gemini-3-pro",
+      "variant": "high"
     },
     "quick": {
       "model": "aicodewith/claude-haiku-4-5-20251001"

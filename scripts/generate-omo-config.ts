@@ -29,16 +29,21 @@ async function main() {
 
   const convertedConfig = {
     $schema: omoConfig.$schema,
-    agents: {} as Record<string, { model: string }>,
-    categories: {} as Record<string, { model: string }>,
+    agents: {} as Record<string, any>,
+    categories: {} as Record<string, any>,
   }
 
   if (omoConfig.agents) {
     for (const [name, agent] of Object.entries(omoConfig.agents)) {
-      const agentConfig = agent as { model: string }
+      const agentConfig = agent as any
       const originalModel = agentConfig.model
       const aicodewithModel = convertToAicodewithModel(originalModel)
-      convertedConfig.agents[name] = { model: aicodewithModel }
+      
+      // Copy all fields from original config, not just model
+      convertedConfig.agents[name] = {
+        ...agentConfig,
+        model: aicodewithModel
+      }
     }
   }
 
@@ -51,10 +56,15 @@ async function main() {
 
   if (omoConfig.categories) {
     for (const [name, category] of Object.entries(omoConfig.categories)) {
-      const categoryConfig = category as { model: string }
+      const categoryConfig = category as any
       const originalModel = categoryConfig.model
       const aicodewithModel = convertToAicodewithModel(originalModel)
-      convertedConfig.categories[name] = { model: aicodewithModel }
+      
+      // Copy all fields from original config, not just model
+      convertedConfig.categories[name] = {
+        ...categoryConfig,
+        model: aicodewithModel
+      }
     }
   }
 
@@ -62,6 +72,33 @@ async function main() {
   for (const categoryName of Object.keys(OMO_MODEL_ASSIGNMENTS.categories)) {
     if (!omoCategoryNames.includes(categoryName) && OMO_MODEL_ASSIGNMENTS.categories[categoryName]) {
       convertedConfig.categories[categoryName] = { model: OMO_MODEL_ASSIGNMENTS.categories[categoryName] }
+    }
+  }
+
+  // Override reasoning effort for GPT models to prevent excessive thinking
+  // xhigh causes models to think for very long time, which looks like "stuck"
+  const REASONING_OVERRIDES: Record<string, { variant?: string }> = {
+    // Categories
+    "ultrabrain": { variant: "high" },  // xhigh -> high (still deep reasoning, but faster)
+    
+    // Agents - keep medium for most, high for strategic ones
+    "oracle": { variant: "high" },      // Strategic reasoning
+    "momus": { variant: "medium" },     // Plan review
+  }
+
+  // Apply overrides
+  for (const [name, override] of Object.entries(REASONING_OVERRIDES)) {
+    if (convertedConfig.categories[name]) {
+      convertedConfig.categories[name] = {
+        ...convertedConfig.categories[name],
+        ...override
+      }
+    }
+    if (convertedConfig.agents[name]) {
+      convertedConfig.agents[name] = {
+        ...convertedConfig.agents[name],
+        ...override
+      }
     }
   }
 
