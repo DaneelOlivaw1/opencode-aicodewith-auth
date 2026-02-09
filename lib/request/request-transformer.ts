@@ -7,7 +7,7 @@
  * 📌 On change: Update this header + lib/request/ARCHITECTURE.md
  */
 
-import { logDebug, logWarn } from "../logger"
+import { logDebug } from "../logger"
 import { CODEX_OPENCODE_BRIDGE } from "../prompts/codex-opencode-bridge"
 import { getOpenCodeCodexPrompt } from "../prompts/opencode-codex"
 import { getNormalizedModel } from "./helpers/model-map"
@@ -86,19 +86,6 @@ export function filterInput(
   if (!Array.isArray(input)) return input
 
   return input
-    .filter((item) => {
-      if (item.type === "item_reference") {
-        return false
-      }
-      return true
-    })
-    .map((item) => {
-      if (item.id) {
-        const { id, ...itemWithoutId } = item
-        return itemWithoutId as InputItem
-      }
-      return item
-    })
 }
 
 export async function filterOpenCodeSystemPrompts(
@@ -185,26 +172,10 @@ export async function transformRequestBody(
 
   body.model = normalizedModel
   body.stream = true
-  body.store = false
+  body.store = true
   body.instructions = codexInstructions
 
   if (body.input && Array.isArray(body.input)) {
-    const originalIds = body.input
-      .filter((item) => item.id)
-      .map((item) => item.id)
-    if (originalIds.length > 0) {
-      logDebug("Filtering message IDs", originalIds)
-    }
-
-    body.input = filterInput(body.input)
-
-    const remainingIds = (body.input || [])
-      .filter((item) => item.id)
-      .map((item) => item.id)
-    if (remainingIds.length > 0) {
-      logWarn("IDs still present after filtering", remainingIds)
-    }
-
     body.input = await filterOpenCodeSystemPrompts(body.input)
     body.input = addCodexBridgeMessage(body.input, !!body.tools)
 

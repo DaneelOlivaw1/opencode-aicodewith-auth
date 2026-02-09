@@ -51,32 +51,34 @@ describe("filterInput", () => {
     expect(filterInput(null as any)).toBeNull()
   })
 
-  it("filters out item_reference types", () => {
+  it("preserves item_reference types (store=true requires them)", () => {
     const input = [
       { type: "message", role: "user", content: "hello" },
       { type: "item_reference", role: "system" },
       { type: "message", role: "assistant", content: "hi" },
     ]
     const result = filterInput(input)
-    expect(result).toHaveLength(2)
-    expect(result?.every(item => item.type !== "item_reference")).toBe(true)
+    expect(result).toHaveLength(3)
+    expect(result?.[1]?.type).toBe("item_reference")
   })
 
-  it("removes id field from items", () => {
+  it("preserves id field on items (store=true requires them)", () => {
     const input = [
       { id: "msg-1", type: "message", role: "user", content: "hello" },
       { id: "msg-2", type: "message", role: "assistant", content: "hi" },
     ]
     const result = filterInput(input)
-    expect(result?.every(item => !("id" in item))).toBe(true)
+    expect(result?.[0]?.id).toBe("msg-1")
+    expect(result?.[1]?.id).toBe("msg-2")
   })
 
-  it("preserves other fields", () => {
+  it("preserves all fields unchanged", () => {
     const input = [
       { id: "msg-1", type: "message", role: "user", content: "hello", metadata: { key: "value" } },
     ]
     const result = filterInput(input)
     expect(result?.[0]).toEqual({
+      id: "msg-1",
       type: "message",
       role: "user",
       content: "hello",

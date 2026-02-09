@@ -427,6 +427,15 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
     event: autoUpdateHook.event,
     "chat.params": async (input, output) => {
       if (input.model.providerID !== PROVIDER_ID) return
+
+      // Codex models: set store=true so SDK uses item_reference for reasoning context
+      if (isCodexModel(input.model.id)) {
+        if (!output.options) output.options = {}
+        output.options.store = true
+        return
+      }
+
+      // Claude models: remove thinking if budgetTokens >= maxTokens
       if (!input.model.id?.startsWith("claude-")) return
       const thinking = output.options?.thinking
       if (!thinking || typeof thinking !== "object") return
