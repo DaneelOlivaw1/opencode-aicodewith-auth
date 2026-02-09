@@ -1,9 +1,9 @@
-import { describe, test, expect } from "bun:test"
+import { describe, test, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 
 describe("Variant Configuration", () => {
-  const projectRoot = join(import.meta.dir, "../..")
+  const projectRoot = join(import.meta.dirname!, "../..")
   const omoConfigPath = join(projectRoot, "assets/default-omo-config.json")
 
   test("ultrabrain category uses 'high' variant (not 'xhigh')", () => {
@@ -121,7 +121,7 @@ describe("Variant Configuration", () => {
 })
 
 describe("Variant Inheritance from OMO", () => {
-  const projectRoot = join(import.meta.dir, "../..")
+  const projectRoot = join(import.meta.dirname!, "../..")
   const omoConfigPath = join(projectRoot, "assets/default-omo-config.json")
 
   test("all config fields are copied from OMO, not just model", () => {
