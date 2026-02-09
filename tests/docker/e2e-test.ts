@@ -164,45 +164,36 @@ async function runTests() {
   console.log("\n📦 Testing: Variant Configuration\n")
 
   await test("generates OMO config with correct variant settings", async () => {
-    const { buildOmoConfig } = await import("../../lib/models")
-    const omoConfig = buildOmoConfig()
+    const omoConfig = JSON.parse(readFileSync(omoConfigPath, "utf-8"))
 
-    // Test ultrabrain category: should be 'high' (not 'xhigh')
     if (!omoConfig.categories?.ultrabrain) throw new Error("ultrabrain category missing")
     if (omoConfig.categories.ultrabrain.variant !== "high") 
       throw new Error(`ultrabrain variant should be 'high', got '${omoConfig.categories.ultrabrain.variant}'`)
 
-    // Test deep category: should be 'medium'
     if (!omoConfig.categories?.deep) throw new Error("deep category missing")
     if (omoConfig.categories.deep.variant !== "medium")
       throw new Error(`deep variant should be 'medium', got '${omoConfig.categories.deep.variant}'`)
 
-    // Test hephaestus agent: should be 'medium'
     if (!omoConfig.agents?.hephaestus) throw new Error("hephaestus agent missing")
     if (omoConfig.agents.hephaestus.variant !== "medium")
       throw new Error(`hephaestus variant should be 'medium', got '${omoConfig.agents.hephaestus.variant}'`)
 
-    // Test oracle agent: should be 'high'
     if (!omoConfig.agents?.oracle) throw new Error("oracle agent missing")
     if (omoConfig.agents.oracle.variant !== "high")
       throw new Error(`oracle variant should be 'high', got '${omoConfig.agents.oracle.variant}'`)
 
-    // Test momus agent: should be 'medium'
     if (!omoConfig.agents?.momus) throw new Error("momus agent missing")
     if (omoConfig.agents.momus.variant !== "medium")
       throw new Error(`momus variant should be 'medium', got '${omoConfig.agents.momus.variant}'`)
   })
 
   await test("copies all config fields from OMO, not just model", async () => {
-    const { buildOmoConfig } = await import("../../lib/models")
-    const omoConfig = buildOmoConfig()
+    const omoConfig = JSON.parse(readFileSync(omoConfigPath, "utf-8"))
 
-    // Test that sisyphus has variant='max' (from OMO)
     if (!omoConfig.agents?.sisyphus) throw new Error("sisyphus agent missing")
     if (omoConfig.agents.sisyphus.variant !== "max")
       throw new Error(`sisyphus should have variant='max', got '${omoConfig.agents.sisyphus.variant}'`)
 
-    // Test that artistry category has variant='high' (from OMO)
     if (!omoConfig.categories?.artistry) throw new Error("artistry category missing")
     if (omoConfig.categories.artistry.variant !== "high")
       throw new Error(`artistry should have variant='high', got '${omoConfig.categories.artistry.variant}'`)
@@ -329,73 +320,59 @@ async function runTests() {
   await test("transforms variant to reasoningEffort for GPT models", async () => {
     const { transformRequestBody } = await import("../../lib/request/request-transformer")
     
-    // Test xhigh variant
-    const xhighRequest = {
-      model: "aicodewith/gpt-5.3-codex",
+    const makeRequest = (model: string, effort: "xhigh" | "high" | "medium" | "low") => ({
+      model,
       messages: [{ role: "user" as const, content: "test" }],
-    }
-    const xhighResult = await transformRequestBody(xhighRequest, { reasoningEffort: "xhigh" })
-    if (xhighResult.reasoning_effort !== "xhigh") 
-      throw new Error(`Expected xhigh, got ${xhighResult.reasoning_effort}`)
+      providerOptions: { openai: { reasoningEffort: effort } },
+    })
 
-    // Test high variant
-    const highRequest = {
-      model: "aicodewith/gpt-5.3-codex",
-      messages: [{ role: "user" as const, content: "test" }],
-    }
-    const highResult = await transformRequestBody(highRequest, { reasoningEffort: "high" })
-    if (highResult.reasoning_effort !== "high")
-      throw new Error(`Expected high, got ${highResult.reasoning_effort}`)
+    const xhighResult = await transformRequestBody(makeRequest("aicodewith/gpt-5.3-codex", "xhigh"), "")
+    if (xhighResult.reasoning?.effort !== "xhigh") 
+      throw new Error(`Expected xhigh, got ${xhighResult.reasoning?.effort}`)
 
-    // Test medium variant
-    const mediumRequest = {
-      model: "aicodewith/gpt-5.3-codex",
-      messages: [{ role: "user" as const, content: "test" }],
-    }
-    const mediumResult = await transformRequestBody(mediumRequest, { reasoningEffort: "medium" })
-    if (mediumResult.reasoning_effort !== "medium")
-      throw new Error(`Expected medium, got ${mediumResult.reasoning_effort}`)
+    const highResult = await transformRequestBody(makeRequest("aicodewith/gpt-5.3-codex", "high"), "")
+    if (highResult.reasoning?.effort !== "high")
+      throw new Error(`Expected high, got ${highResult.reasoning?.effort}`)
+
+    const mediumResult = await transformRequestBody(makeRequest("aicodewith/gpt-5.3-codex", "medium"), "")
+    if (mediumResult.reasoning?.effort !== "medium")
+      throw new Error(`Expected medium, got ${mediumResult.reasoning?.effort}`)
   })
 
   await test("downgrades xhigh to high for models that don't support it", async () => {
     const { transformRequestBody } = await import("../../lib/request/request-transformer")
     
-    // GPT 5.1 doesn't support xhigh
     const request = {
       model: "aicodewith/gpt-5.1-codex",
       messages: [{ role: "user" as const, content: "test" }],
+      providerOptions: { openai: { reasoningEffort: "xhigh" as const } },
     }
-    const result = await transformRequestBody(request, { reasoningEffort: "xhigh" })
-    if (result.reasoning_effort !== "high")
-      throw new Error(`xhigh should downgrade to high for gpt-5.1, got ${result.reasoning_effort}`)
+    const result = await transformRequestBody(request, "")
+    if (result.reasoning?.effort !== "high")
+      throw new Error(`xhigh should downgrade to high for gpt-5.1, got ${result.reasoning?.effort}`)
   })
 
   await test("uses default reasoning effort when not specified", async () => {
     const { transformRequestBody } = await import("../../lib/request/request-transformer")
     
-    // GPT 5.3 Codex default should be 'high'
     const request = {
       model: "aicodewith/gpt-5.3-codex",
       messages: [{ role: "user" as const, content: "test" }],
     }
-    const result = await transformRequestBody(request, {})
-    if (result.reasoning_effort !== "high")
-      throw new Error(`Default for gpt-5.3-codex should be high, got ${result.reasoning_effort}`)
+    const result = await transformRequestBody(request, "")
+    if (result.reasoning?.effort !== "high")
+      throw new Error(`Default for gpt-5.3-codex should be high, got ${result.reasoning?.effort}`)
   })
 
   await test("prevents excessive thinking by using reasonable defaults", async () => {
-    // This test verifies the fix for "GPT 5.3 Codex stuck thinking" issue
-    const { buildOmoConfig } = await import("../../lib/models")
-    const omoConfig = buildOmoConfig()
+    const omoConfig = JSON.parse(readFileSync(omoConfigPath, "utf-8"))
 
-    // Verify that ultrabrain uses 'high' not 'xhigh'
     const ultrabrainVariant = omoConfig.categories?.ultrabrain?.variant
     if (ultrabrainVariant === "xhigh")
       throw new Error("ultrabrain should not use xhigh (causes excessive thinking)")
     if (ultrabrainVariant !== "high")
       throw new Error(`ultrabrain should use 'high', got '${ultrabrainVariant}'`)
 
-    // Verify that hephaestus uses 'medium' for balanced performance
     const hephaestusVariant = omoConfig.agents?.hephaestus?.variant
     if (hephaestusVariant !== "medium")
       throw new Error(`hephaestus should use 'medium' for balanced performance, got '${hephaestusVariant}'`)
