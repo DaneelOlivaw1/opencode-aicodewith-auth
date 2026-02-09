@@ -87,6 +87,18 @@ export function filterInput(
   return input
 }
 
+function stripItemIds(input: InputItem[]): InputItem[] {
+  return input
+    .filter((item) => item.type !== "item_reference")
+    .map((item) => {
+      if ("id" in item) {
+        const { id, ...rest } = item as InputItem & { id: unknown }
+        return rest as InputItem
+      }
+      return item
+    })
+}
+
 
 
 export function filterOpenCodeSystemPrompts(
@@ -170,7 +182,7 @@ export async function transformRequestBody(
   body.instructions = codexInstructions
 
   if (body.input && Array.isArray(body.input)) {
-
+    body.input = stripItemIds(body.input)
     body.input = filterOpenCodeSystemPrompts(body.input)
     body.input = addCodexBridgeMessage(body.input, !!body.tools)
 

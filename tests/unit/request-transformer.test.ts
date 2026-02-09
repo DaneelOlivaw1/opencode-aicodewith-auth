@@ -51,7 +51,7 @@ describe("filterInput", () => {
     expect(filterInput(null as any)).toBeNull()
   })
 
-  it("preserves item_reference types (store=true requires them)", () => {
+  it("passes through all items unchanged (filtering done by stripItemIds in transform pipeline)", () => {
     const input = [
       { type: "message", role: "user", content: "hello" },
       { type: "item_reference", role: "system" },
@@ -59,10 +59,9 @@ describe("filterInput", () => {
     ]
     const result = filterInput(input)
     expect(result).toHaveLength(3)
-    expect(result?.[1]?.type).toBe("item_reference")
   })
 
-  it("preserves id field on items (store=true requires them)", () => {
+  it("passes through items with id fields unchanged", () => {
     const input = [
       { id: "msg-1", type: "message", role: "user", content: "hello" },
       { id: "msg-2", type: "message", role: "assistant", content: "hi" },
