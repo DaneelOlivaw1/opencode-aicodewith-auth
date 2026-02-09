@@ -340,16 +340,11 @@ async function runTests() {
   })
 
   await test("downgrades xhigh to high for models that don't support it", async () => {
-    const { transformRequestBody } = await import("../../lib/request/request-transformer")
+    const { getReasoningConfig } = await import("../../lib/request/request-transformer")
     
-    const request = {
-      model: "aicodewith/gpt-5.1-codex",
-      messages: [{ role: "user" as const, content: "test" }],
-      providerOptions: { openai: { reasoningEffort: "xhigh" as const } },
-    }
-    const result = await transformRequestBody(request, "")
-    if (result.reasoning?.effort !== "high")
-      throw new Error(`xhigh should downgrade to high for gpt-5.1, got ${result.reasoning?.effort}`)
+    const result = getReasoningConfig("gemini-3-pro", { reasoningEffort: "xhigh" })
+    if (result.effort !== "high")
+      throw new Error(`xhigh should downgrade to high for non-GPT-5.2/5.3 models, got ${result.effort}`)
   })
 
   await test("uses default reasoning effort when not specified", async () => {
