@@ -16,13 +16,15 @@ const mockAccess = vi.mocked(access)
 const DEFAULT_OMO_CONFIG = {
   $schema: "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   agents: {
-    sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929" },
-    oracle: { model: "aicodewith/gpt-5.2" },
+    sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" },
+    oracle: { model: "aicodewith/gpt-5.2", variant: "high" },
     build: { model: "aicodewith/claude-opus-4-6-20260205" },
+    momus: { model: "aicodewith/gpt-5.2", variant: "medium" },
   },
   categories: {
     quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
-    ultrabrain: { model: "aicodewith/gemini-3-pro" },
+    ultrabrain: { model: "aicodewith/gpt-5.3-codex", variant: "high" },
+    deep: { model: "aicodewith/gpt-5.3-codex", variant: "medium" },
   },
 }
 
@@ -83,15 +85,16 @@ describe("OMO Config Sync", () => {
       mockAccess.mockRejectedValue(new Error("ENOENT"))
     })
 
-    it("creates config with default agents and categories", async () => {
+    it("creates config with default agents and categories including variant", async () => {
       await syncOmoConfig()
       
       expect(mockWriteFile).toHaveBeenCalled()
       const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
       
-      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929" })
-      expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2" })
+      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" })
+      expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2", variant: "high" })
       expect(writtenContent.categories.quick).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929" })
+      expect(writtenContent.categories.ultrabrain).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "high" })
     })
 
     it("includes $schema in new config", async () => {
@@ -107,7 +110,7 @@ describe("OMO Config Sync", () => {
       mockAccess.mockResolvedValue(undefined)
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
-          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" },
         },
         categories: {},
       }))
@@ -115,7 +118,7 @@ describe("OMO Config Sync", () => {
       await syncOmoConfig()
       
       const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
-      expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2" })
+      expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2", variant: "high" })
       expect(writtenContent.agents.build).toEqual({ model: "aicodewith/claude-opus-4-6-20260205" })
     })
 
@@ -131,7 +134,8 @@ describe("OMO Config Sync", () => {
       await syncOmoConfig()
       
       const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
-      expect(writtenContent.categories.ultrabrain).toEqual({ model: "aicodewith/gemini-3-pro" })
+      expect(writtenContent.categories.ultrabrain).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "high" })
+      expect(writtenContent.categories.deep).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "medium" })
     })
 
     it("preserves user customized agent model (does NOT overwrite)", async () => {
@@ -236,8 +240,43 @@ describe("OMO Config Sync", () => {
     })
   })
 
-  describe("no changes needed", () => {
-    it("does not write file when config is already in sync", async () => {
+  describe("variant field sync", () => {
+    it("copies variant field when adding missing agents", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {},
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      // Agents with variant in default config should have variant copied
+      expect(writtenContent.agents.sisyphus.variant).toBe("max")
+      expect(writtenContent.agents.oracle.variant).toBe("high")
+      expect(writtenContent.agents.momus.variant).toBe("medium")
+      // Agents without variant in default config should not have variant
+      expect(writtenContent.agents.build.variant).toBeUndefined()
+    })
+
+    it("copies variant field when adding missing categories", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {},
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      // Categories with variant in default config should have variant copied
+      expect(writtenContent.categories.ultrabrain.variant).toBe("high")
+      expect(writtenContent.categories.deep.variant).toBe("medium")
+      // Categories without variant in default config should not have variant
+      expect(writtenContent.categories.quick.variant).toBeUndefined()
+    })
+
+    it("backfills missing variant for existing agent when default has variant", async () => {
       mockAccess.mockResolvedValue(undefined)
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
@@ -245,9 +284,159 @@ describe("OMO Config Sync", () => {
           oracle: { model: "aicodewith/gpt-5.2" },
           build: { model: "aicodewith/claude-opus-4-6-20260205" },
         },
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      expect(writtenContent.agents.sisyphus.variant).toBe("max")
+      expect(writtenContent.agents.oracle.variant).toBe("high")
+      expect(writtenContent.agents.build.variant).toBeUndefined()
+    })
+
+    it("backfills missing variant for existing category when default has variant", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {},
+        categories: {
+          ultrabrain: { model: "aicodewith/gpt-5.3-codex" },
+          deep: { model: "aicodewith/gpt-5.3-codex" },
+          quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+        },
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      expect(writtenContent.categories.ultrabrain.variant).toBe("high")
+      expect(writtenContent.categories.deep.variant).toBe("medium")
+      expect(writtenContent.categories.quick.variant).toBeUndefined()
+    })
+
+    it("does NOT backfill variant when user uses non-aicodewith model", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {
+          sisyphus: { model: "openai/gpt-4o" },
+        },
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      expect(writtenContent.agents.sisyphus.variant).toBeUndefined()
+    })
+
+    it("does NOT backfill variant when user uses different aicodewith model", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {
+          oracle: { model: "aicodewith/claude-opus-4-6-20260205" },
+        },
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      expect(writtenContent.agents.oracle.variant).toBeUndefined()
+    })
+
+    it("preserves user's existing variant when agent already exists", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {
+          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "low" },
+          oracle: { model: "aicodewith/gpt-5.2", variant: "xhigh" },
+        },
+        categories: {
+          ultrabrain: { model: "aicodewith/gpt-5.3-codex", variant: "xhigh" },
+        },
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      // User's custom variant should be preserved (not overwritten by default)
+      expect(writtenContent.agents.sisyphus.variant).toBe("low")
+      expect(writtenContent.agents.oracle.variant).toBe("xhigh")
+      expect(writtenContent.categories.ultrabrain.variant).toBe("xhigh")
+    })
+
+    it("preserves user's variant during model migration", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {
+          build: { model: "aicodewith/claude-opus-4-5-20251101", variant: "high" },
+        },
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      // Model should be migrated but variant should be preserved
+      expect(writtenContent.agents.build.model).toBe("aicodewith/claude-opus-4-6-20260205")
+      expect(writtenContent.agents.build.variant).toBe("high")
+    })
+
+    it("new user gets full config with all variant fields", async () => {
+      mockAccess.mockRejectedValue(new Error("ENOENT"))
+      
+      await syncOmoConfig()
+      
+      expect(mockWriteFile).toHaveBeenCalled()
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      
+      // Verify all variant fields from default config are present
+      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" })
+      expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2", variant: "high" })
+      expect(writtenContent.agents.momus).toEqual({ model: "aicodewith/gpt-5.2", variant: "medium" })
+      expect(writtenContent.agents.build).toEqual({ model: "aicodewith/claude-opus-4-6-20260205" })
+      expect(writtenContent.categories.ultrabrain).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "high" })
+      expect(writtenContent.categories.deep).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "medium" })
+      expect(writtenContent.categories.quick).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929" })
+    })
+
+    it("preserves user extra fields alongside variant during sync", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {
+          sisyphus: { 
+            model: "aicodewith/claude-sonnet-4-5-20250929",
+            variant: "max",
+            temperature: 0.7,
+          },
+        },
+        categories: {},
+      }))
+      
+      await syncOmoConfig()
+      
+      const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
+      // All fields should be preserved
+      expect(writtenContent.agents.sisyphus.model).toBe("aicodewith/claude-sonnet-4-5-20250929")
+      expect(writtenContent.agents.sisyphus.variant).toBe("max")
+      expect(writtenContent.agents.sisyphus.temperature).toBe(0.7)
+    })
+  })
+
+  describe("no changes needed", () => {
+    it("does not write file when config is already in sync", async () => {
+      mockAccess.mockResolvedValue(undefined)
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        agents: {
+          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" },
+          oracle: { model: "aicodewith/gpt-5.2", variant: "high" },
+          build: { model: "aicodewith/claude-opus-4-6-20260205" },
+          momus: { model: "aicodewith/gpt-5.2", variant: "medium" },
+        },
         categories: {
           quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
-          ultrabrain: { model: "aicodewith/gemini-3-pro" },
+          ultrabrain: { model: "aicodewith/gpt-5.3-codex", variant: "high" },
+          deep: { model: "aicodewith/gpt-5.3-codex", variant: "medium" },
         },
       }))
       

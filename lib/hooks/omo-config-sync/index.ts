@@ -117,7 +117,12 @@ const syncAgentsAndCategories = (
   if (defaultConfig.agents) {
     for (const [name, defaultAgent] of Object.entries(defaultConfig.agents)) {
       if (!userConfig.agents[name] && defaultAgent.model) {
-        userConfig.agents[name] = { model: defaultAgent.model }
+        userConfig.agents[name] = { ...defaultAgent }
+        changed = true
+      } else if (userConfig.agents[name] && defaultAgent.variant
+        && !userConfig.agents[name].variant
+        && userConfig.agents[name].model === defaultAgent.model) {
+        userConfig.agents[name].variant = defaultAgent.variant
         changed = true
       }
     }
@@ -126,7 +131,12 @@ const syncAgentsAndCategories = (
   if (defaultConfig.categories) {
     for (const [name, defaultCategory] of Object.entries(defaultConfig.categories)) {
       if (!userConfig.categories[name] && defaultCategory.model) {
-        userConfig.categories[name] = { model: defaultCategory.model }
+        userConfig.categories[name] = { ...defaultCategory }
+        changed = true
+      } else if (userConfig.categories[name] && defaultCategory.variant
+        && !userConfig.categories[name].variant
+        && userConfig.categories[name].model === defaultCategory.model) {
+        userConfig.categories[name].variant = defaultCategory.variant
         changed = true
       }
     }
