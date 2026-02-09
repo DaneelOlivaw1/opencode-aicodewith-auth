@@ -428,10 +428,8 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
     "chat.params": async (input, output) => {
       if (input.model.providerID !== PROVIDER_ID) return
 
-      // Codex models: set store=true so SDK uses item_reference for reasoning context
+      // Codex models: no special handling needed (store defaults to false via OpenCode core)
       if (isCodexModel(input.model.id)) {
-        if (!output.options) output.options = {}
-        output.options.store = true
         return
       }
 

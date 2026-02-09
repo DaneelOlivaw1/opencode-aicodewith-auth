@@ -28,7 +28,7 @@ export async function transformRequestForCodex(
   try {
     const body = JSON.parse(init.body as string) as RequestBody
     const normalizedModel = normalizeModel(body.model)
-    const codexInstructions = await getCodexInstructions(normalizedModel)
+    const codexInstructions = getCodexInstructions(normalizedModel)
     const transformedBody = await transformRequestBody(
       body,
       codexInstructions,

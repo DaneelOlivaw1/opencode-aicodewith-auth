@@ -9,7 +9,6 @@
 
 import { logDebug } from "../logger"
 import { CODEX_OPENCODE_BRIDGE } from "../prompts/codex-opencode-bridge"
-import { getOpenCodeCodexPrompt } from "../prompts/opencode-codex"
 import { getNormalizedModel } from "./helpers/model-map"
 import {
   filterOpenCodeSystemPromptsWithCachedPrompt,
@@ -88,18 +87,24 @@ export function filterInput(
   return input
 }
 
-export async function filterOpenCodeSystemPrompts(
+function stripItemIds(input: InputItem[]): InputItem[] {
+  return input
+    .filter((item) => item.type !== "item_reference")
+    .map((item) => {
+      if ("id" in item) {
+        const { id, ...rest } = item as InputItem & { id: unknown }
+        return rest as InputItem
+      }
+      return item
+    })
+}
+
+export function filterOpenCodeSystemPrompts(
   input: InputItem[] | undefined,
-): Promise<InputItem[] | undefined> {
+): InputItem[] | undefined {
   if (!Array.isArray(input)) return input
 
-  let cachedPrompt: string | null = null
-  try {
-    cachedPrompt = await getOpenCodeCodexPrompt()
-  } catch {
-  }
-
-  return filterOpenCodeSystemPromptsWithCachedPrompt(input, cachedPrompt)
+  return filterOpenCodeSystemPromptsWithCachedPrompt(input, null)
 }
 
 export function addCodexBridgeMessage(
@@ -172,11 +177,11 @@ export async function transformRequestBody(
 
   body.model = normalizedModel
   body.stream = true
-  body.store = true
   body.instructions = codexInstructions
 
   if (body.input && Array.isArray(body.input)) {
-    body.input = await filterOpenCodeSystemPrompts(body.input)
+    body.input = stripItemIds(body.input)
+    body.input = filterOpenCodeSystemPrompts(body.input)
     body.input = addCodexBridgeMessage(body.input, !!body.tools)
 
     if (body.input) {
