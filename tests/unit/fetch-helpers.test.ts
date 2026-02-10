@@ -80,13 +80,17 @@ describe("sanitizeRequestBody", () => {
     const input = JSON.stringify({
       model: "gpt-5.3-codex",
       input: [
-        { type: "call", id: "call_123", name: "test" },
+        { type: "function_call", id: "call_123", name: "test" },
+        { type: "local_shell_call", id: "call_456", command: "ls" },
+        { type: "custom_tool_call", id: "call_789", tool: "custom" },
         { role: "user", content: "hi", id: "msg_1" }
       ]
     })
     const result = JSON.parse(sanitizeRequestBody(input))
     expect(result.input[0].id).toBe("call_123")
-    expect(result.input[1].id).toBeUndefined()
+    expect(result.input[1].id).toBe("call_456")
+    expect(result.input[2].id).toBe("call_789")
+    expect(result.input[3].id).toBeUndefined()
   })
 
   it("handles complex real-world request body", () => {

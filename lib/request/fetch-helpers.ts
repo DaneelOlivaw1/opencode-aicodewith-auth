@@ -24,17 +24,18 @@ export function sanitizeRequestBody(bodyStr: string): string {
   try {
     const body = JSON.parse(bodyStr)
     
-    // Remove previousResponseId fields
     delete body.previousResponseId
     delete body.previous_response_id
     
-    // Filter item_reference from input array
     if (Array.isArray(body.input)) {
       body.input = body.input
         .filter((item: any) => item.type !== "item_reference")
         .map((item: any) => {
-          // Keep id for call items, remove for others
-          if (item.type === "call") return item
+          if (
+            item.type === "function_call" ||
+            item.type === "local_shell_call" ||
+            item.type === "custom_tool_call"
+          ) return item
           const { id, ...rest } = item
           return rest
         })
