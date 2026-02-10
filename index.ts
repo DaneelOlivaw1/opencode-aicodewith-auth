@@ -200,10 +200,14 @@ const isThirdPartyModel = (model: string | undefined) =>
 const stripThirdPartySuffix = (model: string) =>
   model.replace(/-third-party$/, "")
 
-const isModel = (model: string | undefined, prefix: string) => Boolean(model && model.startsWith(prefix))
+const stripProviderPrefix = (model: string) =>
+  model.includes("/") ? model.split("/").pop()! : model
+
+const isModel = (model: string | undefined, prefix: string) =>
+  Boolean(model && stripProviderPrefix(model).startsWith(prefix))
 
 const isCodexModel = (model: string | undefined) =>
-  Boolean(model && CODEX_MODEL_PREFIXES.some((prefix) => model.startsWith(prefix)))
+  Boolean(model && CODEX_MODEL_PREFIXES.some((prefix) => stripProviderPrefix(model).startsWith(prefix)))
 
 const saveResponseIfEnabled = async (
   response: Response,
