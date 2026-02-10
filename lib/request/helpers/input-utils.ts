@@ -8,6 +8,7 @@
  */
 
 import type { InputItem } from "../../types";
+import { logDebug } from "../../logger";
 
 const OPENCODE_PROMPT_SIGNATURES = [
 	"you are a coding agent running in the opencode",
@@ -187,13 +188,16 @@ export const normalizeOrphanedToolOutputs = (
 	const { functionCallIds, localShellCallIds, customToolCallIds } =
 		collectCallIds(input);
 
-	return input.map((item) => {
+	let orphanCount = 0;
+
+	const result = input.map((item) => {
 		if (item.type === "function_call_output") {
 			const callId = getCallId(item);
 			const hasMatch =
 				!!callId &&
 				(functionCallIds.has(callId) || localShellCallIds.has(callId));
 			if (!hasMatch) {
+				orphanCount++;
 				return convertOrphanedOutputToMessage(item, callId);
 			}
 		}
@@ -202,6 +206,7 @@ export const normalizeOrphanedToolOutputs = (
 			const callId = getCallId(item);
 			const hasMatch = !!callId && customToolCallIds.has(callId);
 			if (!hasMatch) {
+				orphanCount++;
 				return convertOrphanedOutputToMessage(item, callId);
 			}
 		}
@@ -210,10 +215,21 @@ export const normalizeOrphanedToolOutputs = (
 			const callId = getCallId(item);
 			const hasMatch = !!callId && localShellCallIds.has(callId);
 			if (!hasMatch) {
+				orphanCount++;
 				return convertOrphanedOutputToMessage(item, callId);
 			}
 		}
 
 		return item;
 	});
+
+	if (orphanCount > 0 || functionCallIds.size > 0 || localShellCallIds.size > 0 || customToolCallIds.size > 0) {
+		logDebug(`normalizeOrphanedToolOutputs: ${orphanCount} orphans converted`, {
+			functionCallIds: functionCallIds.size,
+			localShellCallIds: localShellCallIds.size,
+			customToolCallIds: customToolCallIds.size,
+		});
+	}
+
+	return result;
 };

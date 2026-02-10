@@ -190,9 +190,6 @@ export async function transformRequestBody(
     },
   )
 
-  const hadPreviousResponseId = !!(body.previousResponseId || body.previous_response_id)
-  const hadItemReferences = Array.isArray(body.input) && body.input.some((item) => item.type === "item_reference")
-
   body.model = normalizedModel
   body.stream = true
   body.store = false
@@ -207,25 +204,6 @@ export async function transformRequestBody(
 
     if (body.input) {
       body.input = normalizeOrphanedToolOutputs(body.input)
-
-      if (hadPreviousResponseId || hadItemReferences) {
-        const hasAssistantOrToolHistory = body.input.some((item) =>
-          item.role === "assistant" ||
-          item.type === "function_call" ||
-          item.type === "function_call_output" ||
-          item.type === "local_shell_call" ||
-          item.type === "local_shell_call_output" ||
-          item.type === "custom_tool_call" ||
-          item.type === "custom_tool_call_output"
-        )
-        if (!hasAssistantOrToolHistory) {
-          logDebug(
-            "WARNING: Request had previous_response_id/item_reference but input lacks assistant/tool history. " +
-            "Context may be lost in store:false mode. Upstream should send full conversation history in input.",
-            { hadPreviousResponseId, hadItemReferences, inputLength: body.input.length },
-          )
-        }
-      }
     }
   }
 

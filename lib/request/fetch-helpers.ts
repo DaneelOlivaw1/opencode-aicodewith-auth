@@ -11,7 +11,8 @@ import { HEADER_NAMES, ORIGINATOR, USER_AGENT } from "../constants"
 import { logRequest, logDebug } from "../logger"
 import { getCodexInstructions } from "../prompts/codex"
 import type { RequestBody } from "../types"
-import { transformRequestBody, normalizeModel } from "./request-transformer"
+import { transformRequestBody, normalizeModel, sanitizeItemIds } from "./request-transformer"
+import { normalizeOrphanedToolOutputs } from "./helpers/input-utils"
 import { convertSseToJson, ensureContentType } from "./response-handler"
 
 export function extractRequestUrl(input: Request | string | URL): string {
@@ -26,19 +27,11 @@ export function sanitizeRequestBody(bodyStr: string): string {
     
     delete body.previousResponseId
     delete body.previous_response_id
+    body.store = false
     
     if (Array.isArray(body.input)) {
-      body.input = body.input
-        .filter((item: any) => item.type !== "item_reference")
-        .map((item: any) => {
-          if (
-            item.type === "function_call" ||
-            item.type === "local_shell_call" ||
-            item.type === "custom_tool_call"
-          ) return item
-          const { id, ...rest } = item
-          return rest
-        })
+      body.input = sanitizeItemIds(body.input)
+      body.input = normalizeOrphanedToolOutputs(body.input)
     }
     
     return JSON.stringify(body)
@@ -54,6 +47,7 @@ export async function transformRequestForCodex(
 
   try {
     const body = JSON.parse(init.body as string) as RequestBody
+
     const normalizedModel = normalizeModel(body.model)
     const codexInstructions = getCodexInstructions(normalizedModel)
     const transformedBody = await transformRequestBody(
