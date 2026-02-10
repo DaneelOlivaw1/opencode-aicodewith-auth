@@ -18,10 +18,17 @@ import {
   PROVIDER_ID,
   AICODEWITH_ANTHROPIC_BASE_URL,
   AICODEWITH_LITE_URL,
+  AICODEWITH_GEMINI_BASE_URL,
+  MODEL_MIGRATIONS,
+  HEADER_NAMES,
+  GEMINI_USER_AGENT,
+  GEMINI_API_CLIENT,
+  GEMINI_PRIVILEGED_USER_ID_ENV,
 } from "./lib/constants"
 import {
   transformRequestForCodex,
   sanitizeRequestBody,
+  extractRequestUrl,
   createAicodewithHeaders,
   handleErrorResponse,
   handleSuccessResponse,
