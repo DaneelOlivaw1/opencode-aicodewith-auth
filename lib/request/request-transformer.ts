@@ -115,29 +115,32 @@ export function sanitizeItemIds(input: InputItem[]): InputItem[] {
   return input
     .filter((item) => item.type !== "item_reference")
     .map((item) => {
+      // If item doesn't have an id field, return as-is
+      if (!("id" in item)) {
+        return item;
+      }
+
       // Check if this is a call item
       const isCallItem =
         item.type === "function_call" ||
         item.type === "local_shell_call" ||
         item.type === "custom_tool_call";
 
-      if (!isCallItem || !("id" in item)) {
-        return item;
+      // Only preserve id for call items with matching output
+      if (isCallItem) {
+        const callId = (item as { call_id?: unknown }).call_id;
+        const hasMatchingOutput =
+          typeof callId === "string" &&
+          callId.trim().length > 0 &&
+          outputCallIds.has(callId.trim());
+
+        if (hasMatchingOutput) {
+          // Preserve the id field for matched calls
+          return item;
+        }
       }
 
-      // Check if this call has a matching output
-      const callId = (item as { call_id?: unknown }).call_id;
-      const hasMatchingOutput =
-        typeof callId === "string" &&
-        callId.trim().length > 0 &&
-        outputCallIds.has(callId.trim());
-
-      if (hasMatchingOutput) {
-        // Preserve the id field for matched calls
-        return item;
-      }
-
-      // Strip id from unmatched calls
+      // Strip id from all other items (message, reasoning, unmatched calls, etc.)
       const { id, ...rest } = item as InputItem & { id: unknown };
       return rest as InputItem;
     });
@@ -224,6 +227,8 @@ export async function transformRequestBody(
    body.model = normalizedModel
    body.stream = true
    body.store = false
+   delete body.previousResponseId
+   delete body.previous_response_id
    body.instructions = codexInstructions
 
   if (body.input && Array.isArray(body.input)) {

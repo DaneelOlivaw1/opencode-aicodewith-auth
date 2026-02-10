@@ -316,6 +316,54 @@ describe("transformRequestBody", () => {
       expect(result.store).toBe(false)
     })
   })
+
+  describe("previousResponseId removal", () => {
+    it("removes previousResponseId (camelCase) from request body", async () => {
+      const body = {
+        model: "gpt-5.3-codex",
+        input: [],
+        previousResponseId: "response-123",
+      }
+      const result = await transformRequestBody(body as any, "test instructions")
+      expect(result).not.toHaveProperty("previousResponseId")
+    })
+
+    it("removes previous_response_id (snake_case) from request body", async () => {
+      const body = {
+        model: "gpt-5.3-codex",
+        input: [],
+        previous_response_id: "response-456",
+      }
+      const result = await transformRequestBody(body as any, "test instructions")
+      expect(result).not.toHaveProperty("previous_response_id")
+    })
+
+    it("removes both previousResponseId and previous_response_id if both present", async () => {
+      const body = {
+        model: "gpt-5.3-codex",
+        input: [],
+        previousResponseId: "response-123",
+        previous_response_id: "response-456",
+      }
+      const result = await transformRequestBody(body as any, "test instructions")
+      expect(result).not.toHaveProperty("previousResponseId")
+      expect(result).not.toHaveProperty("previous_response_id")
+    })
+
+    it("preserves other fields while removing previousResponseId", async () => {
+      const body = {
+        model: "gpt-5.3-codex",
+        input: [],
+        previousResponseId: "response-123",
+        metadata: { key: "value" },
+        customField: "test",
+      }
+      const result = await transformRequestBody(body as any, "test instructions")
+      expect(result).not.toHaveProperty("previousResponseId")
+      expect(result.metadata).toEqual({ key: "value" })
+      expect(result.customField).toBe("test")
+    })
+  })
 })
 
 describe("addCodexBridgeMessage", () => {
