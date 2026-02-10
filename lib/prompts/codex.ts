@@ -1,20 +1,13 @@
 /**
  * @file codex.ts
  * @input  Normalized model name
- * @output Codex system prompt (from local fallback file)
- * @pos    Prompt provider - reads model instructions from bundled fallback file
+ * @output Codex system prompt (inlined at build time, no filesystem dependency)
+ * @pos    Prompt provider - returns model instructions for Codex API
  *
  * 📌 On change: Update this header + lib/prompts/ARCHITECTURE.md
  */
 
-import { readFileSync } from "node:fs"
-import { dirname, join } from "node:path"
-import { fileURLToPath } from "node:url"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const FALLBACK_FILE = join(__dirname, "fallback-instructions.txt")
+import { FALLBACK_INSTRUCTIONS } from "./fallback-instructions-inline"
 
 export type ModelFamily =
   | "gpt-5.2-codex"
@@ -45,12 +38,8 @@ export function getModelFamily(normalizedModel: string): ModelFamily {
   return "gpt-5.1"
 }
 
-let cachedInstructions: string | null = null
-
 export function getCodexInstructions(
   _normalizedModel = "gpt-5.1-codex",
 ): string {
-  if (cachedInstructions) return cachedInstructions
-  cachedInstructions = readFileSync(FALLBACK_FILE, "utf8")
-  return cachedInstructions
+  return FALLBACK_INSTRUCTIONS
 }
