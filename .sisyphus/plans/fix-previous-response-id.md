@@ -43,7 +43,7 @@ AI SDK 在多轮对话时，在请求体**顶层**添加 `previousResponseId` �
 
 ## TODOs
 
-- [ ] 1. 在 transformRequestBody() 中移除 previousResponseId
+- [x] 1. 在 transformRequestBody() 中移除 previousResponseId
 
   **What to do**:
   在 `lib/request/request-transformer.ts` 的 `transformRequestBody()` 函数中，在 `body.store = false` 之后添加：
@@ -70,7 +70,7 @@ AI SDK 在多轮对话时，在请求体**顶层**添加 `previousResponseId` �
 
 ---
 
-- [ ] 2. 添加测试并提交 + push + bump 版本
+- [x] 2. 添加测试并提交 + push + bump 版本
 
   **What to do**:
   在 `tests/unit/request-transformer.test.ts` 中添加测试：

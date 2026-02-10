@@ -422,9 +422,9 @@ describe("transformClaudeResponse", () => {
     })
 
     it("handles response with only status 2xx but empty body", async () => {
-      const response = new Response("", { status: 204 })
+      const response = new Response("", { status: 200 })
       const result = transformClaudeResponse(response)
-      expect(result.status).toBe(204)
+      expect(result.status).toBe(200)
       const text = await result.text()
       expect(text).toBe("")
     })
