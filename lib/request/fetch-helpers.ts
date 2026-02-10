@@ -8,7 +8,7 @@
  */
 
 import { HEADER_NAMES, ORIGINATOR, USER_AGENT } from "../constants"
-import { logRequest } from "../logger"
+import { logRequest, logDebug } from "../logger"
 import { getCodexInstructions } from "../prompts/codex"
 import type { RequestBody } from "../types"
 import { transformRequestBody, normalizeModel } from "./request-transformer"
@@ -18,6 +18,32 @@ export function extractRequestUrl(input: Request | string | URL): string {
   if (typeof input === "string") return input
   if (input instanceof URL) return input.toString()
   return input.url
+}
+
+export function sanitizeRequestBody(bodyStr: string): string {
+  try {
+    const body = JSON.parse(bodyStr)
+    
+    // Remove previousResponseId fields
+    delete body.previousResponseId
+    delete body.previous_response_id
+    
+    // Filter item_reference from input array
+    if (Array.isArray(body.input)) {
+      body.input = body.input
+        .filter((item: any) => item.type !== "item_reference")
+        .map((item: any) => {
+          // Keep id for call items, remove for others
+          if (item.type === "call") return item
+          const { id, ...rest } = item
+          return rest
+        })
+    }
+    
+    return JSON.stringify(body)
+  } catch {
+    return bodyStr
+  }
 }
 
 export async function transformRequestForCodex(
@@ -44,8 +70,15 @@ export async function transformRequestForCodex(
       body: transformedBody,
       updatedInit: { ...init, body: JSON.stringify(transformedBody) },
     }
-  } catch {
-    return undefined
+  } catch (error) {
+    logDebug("codex-transform-error", { 
+      error: error instanceof Error ? error.message : String(error) 
+    })
+    const sanitized = sanitizeRequestBody(init.body as string)
+    return { 
+      body: JSON.parse(sanitized), 
+      updatedInit: { ...init, body: sanitized } 
+    }
   }
 }
 

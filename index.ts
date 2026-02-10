@@ -18,19 +18,13 @@ import {
   PROVIDER_ID,
   AICODEWITH_ANTHROPIC_BASE_URL,
   AICODEWITH_LITE_URL,
-  AICODEWITH_GEMINI_BASE_URL,
-  GEMINI_API_CLIENT,
-  GEMINI_PRIVILEGED_USER_ID_ENV,
-  GEMINI_USER_AGENT,
-  HEADER_NAMES,
-  MODEL_MIGRATIONS,
 } from "./lib/constants"
 import {
+  transformRequestForCodex,
+  sanitizeRequestBody,
   createAicodewithHeaders,
-  extractRequestUrl,
   handleErrorResponse,
   handleSuccessResponse,
-  transformRequestForCodex,
 } from "./lib/request/fetch-helpers"
 import { transformClaudeRequest, transformClaudeResponse } from "./lib/request/claude-tools-transform"
 import { createAutoUpdateHook } from "./lib/hooks/auto-update"
@@ -345,7 +339,12 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
 
           if (isCodexRequest) {
             const transformation = await transformRequestForCodex(init)
-            const requestInit = transformation?.updatedInit ?? init
+            let requestInit = transformation?.updatedInit ?? init
+
+            if (!transformation && init.body) {
+              const sanitized = sanitizeRequestBody(init.body as string)
+              requestInit = { ...init, body: sanitized }
+            }
 
             const headers = createAicodewithHeaders(requestInit, apiKey, {
               promptCacheKey: transformation?.body.prompt_cache_key,
