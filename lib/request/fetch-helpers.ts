@@ -25,8 +25,6 @@ export function sanitizeRequestBody(bodyStr: string): string {
   try {
     const body = JSON.parse(bodyStr)
     
-    delete body.previousResponseId
-    delete body.previous_response_id
     body.store = false
     
     if (Array.isArray(body.input)) {

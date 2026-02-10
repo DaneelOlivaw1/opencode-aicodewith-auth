@@ -61,9 +61,9 @@ function resolveReasoningConfig(modelName: string, body: RequestBody): Reasoning
   return getReasoningConfig(modelName, mergedConfig)
 }
 
-function resolveTextVerbosity(body: RequestBody): "low" | "medium" | "high" | undefined {
+function resolveTextVerbosity(body: RequestBody): "low" | "medium" | "high" {
   const providerOpenAI = body.providerOptions?.openai
-  return body.text?.verbosity ?? providerOpenAI?.textVerbosity
+  return body.text?.verbosity ?? providerOpenAI?.textVerbosity ?? "medium"
 }
 
 function resolveInclude(body: RequestBody): string[] {
@@ -193,9 +193,12 @@ export async function transformRequestBody(
   body.model = normalizedModel
   body.stream = true
   body.store = false
-  delete body.previousResponseId
-  delete body.previous_response_id
-  body.instructions = codexInstructions
+
+  // Preserve original instructions from OpenCode/Codex CLI (contains critical
+  // "keep going" directives for multi-turn). Only replace if none were provided.
+  if (!body.instructions) {
+    body.instructions = codexInstructions
+  }
 
   if (body.input && Array.isArray(body.input)) {
     body.input = sanitizeItemIds(body.input)
@@ -214,11 +217,9 @@ export async function transformRequestBody(
   }
 
   const verbosity = resolveTextVerbosity(body)
-  if (verbosity) {
-    body.text = {
-      ...body.text,
-      verbosity,
-    }
+  body.text = {
+    ...body.text,
+    verbosity,
   }
 
   body.include = resolveInclude(body)

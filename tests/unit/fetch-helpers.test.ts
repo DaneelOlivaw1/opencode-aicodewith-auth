@@ -16,27 +16,27 @@ describe("sanitizeRequestBody", () => {
     expect(result.input.every((item: any) => item.type !== "item_reference")).toBe(true)
   })
 
-  it("removes previousResponseId from top level", () => {
+  it("preserves previousResponseId (camelCase) in request body", () => {
     const input = JSON.stringify({
       model: "gpt-5.3-codex",
       previousResponseId: "resp_123",
       input: []
     })
     const result = JSON.parse(sanitizeRequestBody(input))
-    expect(result.previousResponseId).toBeUndefined()
+    expect(result.previousResponseId).toBe("resp_123")
   })
 
-  it("removes previous_response_id from top level", () => {
+  it("preserves previous_response_id (snake_case) in request body", () => {
     const input = JSON.stringify({
       model: "gpt-5.3-codex",
       previous_response_id: "resp_123",
       input: []
     })
     const result = JSON.parse(sanitizeRequestBody(input))
-    expect(result.previous_response_id).toBeUndefined()
+    expect(result.previous_response_id).toBe("resp_123")
   })
 
-  it("removes both previousResponseId variants if both present", () => {
+  it("preserves both previousResponseId variants if both present", () => {
     const input = JSON.stringify({
       model: "gpt-5.3-codex",
       previousResponseId: "resp_123",
@@ -44,8 +44,8 @@ describe("sanitizeRequestBody", () => {
       input: []
     })
     const result = JSON.parse(sanitizeRequestBody(input))
-    expect(result.previousResponseId).toBeUndefined()
-    expect(result.previous_response_id).toBeUndefined()
+    expect(result.previousResponseId).toBe("resp_123")
+    expect(result.previous_response_id).toBe("resp_456")
   })
 
   it("returns original string on parse failure", () => {
@@ -59,7 +59,7 @@ describe("sanitizeRequestBody", () => {
       previousResponseId: "resp_123"
     })
     const result = JSON.parse(sanitizeRequestBody(input))
-    expect(result.previousResponseId).toBeUndefined()
+    expect(result.previousResponseId).toBe("resp_123")
     expect(result.input).toBeUndefined()
   })
 
@@ -110,7 +110,7 @@ describe("sanitizeRequestBody", () => {
       tools: []
     })
     const result = JSON.parse(sanitizeRequestBody(input))
-    expect(result.previousResponseId).toBeUndefined()
+    expect(result.previousResponseId).toBe("resp_123")
     expect(result.input).toHaveLength(3)
     expect(result.input.every((item: any) => item.type !== "item_reference")).toBe(true)
     expect(result.store).toBe(false)

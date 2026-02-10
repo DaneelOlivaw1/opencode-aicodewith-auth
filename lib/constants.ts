@@ -19,7 +19,7 @@ export const AICODEWITH_GEMINI_BASE_URL = "https://api.aicodewith.com/gemini_cli
 export const GEMINI_USER_AGENT = "GeminiCLI/v25.2.1 (darwin; arm64)"
 export const GEMINI_API_CLIENT = "google-genai-sdk/1.30.0 gl-node/v25.2.1"
 export const GEMINI_PRIVILEGED_USER_ID_ENV = "AICODEWITH_GEMINI_USER_ID"
-export const USER_AGENT = "codex_cli_rs/0.77.0 (Mac OS 26.2.0; arm64) iTerm.app/3.6.6"
+export const USER_AGENT = "codex_cli_rs/0.93.0 (Mac OS 26.2.0; arm64) iTerm.app/3.6.6"
 export const ORIGINATOR = "codex_cli_rs"
 
 export const SAVE_RAW_RESPONSE_ENV = "SAVE_RAW_RESPONSE"

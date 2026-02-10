@@ -277,28 +277,28 @@ describe("transformRequestBody", () => {
     })
   })
 
-  describe("previousResponseId removal", () => {
-    it("removes previousResponseId (camelCase) from request body", async () => {
+  describe("previousResponseId preservation", () => {
+    it("preserves previousResponseId (camelCase) in request body", async () => {
       const body = {
         model: "gpt-5.3-codex",
         input: [],
         previousResponseId: "response-123",
       }
       const result = await transformRequestBody(body as any, "test instructions")
-      expect(result).not.toHaveProperty("previousResponseId")
+      expect(result.previousResponseId).toBe("response-123")
     })
 
-    it("removes previous_response_id (snake_case) from request body", async () => {
+    it("preserves previous_response_id (snake_case) in request body", async () => {
       const body = {
         model: "gpt-5.3-codex",
         input: [],
         previous_response_id: "response-456",
       }
       const result = await transformRequestBody(body as any, "test instructions")
-      expect(result).not.toHaveProperty("previous_response_id")
+      expect(result.previous_response_id).toBe("response-456")
     })
 
-    it("removes both previousResponseId and previous_response_id if both present", async () => {
+    it("preserves both previousResponseId and previous_response_id if both present", async () => {
       const body = {
         model: "gpt-5.3-codex",
         input: [],
@@ -306,11 +306,11 @@ describe("transformRequestBody", () => {
         previous_response_id: "response-456",
       }
       const result = await transformRequestBody(body as any, "test instructions")
-      expect(result).not.toHaveProperty("previousResponseId")
-      expect(result).not.toHaveProperty("previous_response_id")
+      expect(result.previousResponseId).toBe("response-123")
+      expect(result.previous_response_id).toBe("response-456")
     })
 
-    it("preserves other fields while removing previousResponseId", async () => {
+    it("preserves other fields alongside previousResponseId", async () => {
       const body = {
         model: "gpt-5.3-codex",
         input: [],
@@ -319,7 +319,7 @@ describe("transformRequestBody", () => {
         customField: "test",
       }
       const result = await transformRequestBody(body as any, "test instructions")
-      expect(result).not.toHaveProperty("previousResponseId")
+      expect(result.previousResponseId).toBe("response-123")
       expect(result.metadata).toEqual({ key: "value" })
       expect(result.customField).toBe("test")
     })

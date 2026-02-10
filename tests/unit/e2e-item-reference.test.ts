@@ -59,9 +59,6 @@ function buildRealisticRequestBody() {
 }
 
 function assertCleanBody(body: Record<string, unknown>, label: string) {
-  expect(body.previousResponseId, `${label}: previousResponseId should be removed`).toBeUndefined()
-  expect(body.previous_response_id, `${label}: previous_response_id should be removed`).toBeUndefined()
-
   if (Array.isArray(body.input)) {
     const itemRefs = body.input.filter((item: any) => item.type === "item_reference")
     expect(itemRefs, `${label}: item_reference entries should be removed`).toHaveLength(0)
@@ -198,8 +195,6 @@ describe("E2E: item_reference sanitization", () => {
       assertCleanBody(received, "wire-level")
 
       expect(capturedBodies[0]).not.toContain('"item_reference"')
-      expect(capturedBodies[0]).not.toContain('"previousResponseId"')
-      expect(capturedBodies[0]).not.toContain('"previous_response_id"')
     })
 
     it("safety-net sends clean body even when transformation would fail", async () => {
@@ -220,7 +215,6 @@ describe("E2E: item_reference sanitization", () => {
 
       assertCleanBody(received, "safety-net wire-level")
       expect(capturedBodies[0]).not.toContain('"item_reference"')
-      expect(capturedBodies[0]).not.toContain('"previousResponseId"')
     })
   })
 
