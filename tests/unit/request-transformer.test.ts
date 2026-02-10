@@ -243,6 +243,47 @@ describe("sanitizeItemIds", () => {
     // Should match after trimming
     expect(result[0].id).toBe("msg-1")
   })
+
+  it("strips id from message item", () => {
+    const input = [
+      { id: "msg-0c4cb61177bb", type: "message", role: "user", content: "hello" },
+    ]
+    const result = sanitizeItemIds(input as any)
+    expect(result).toHaveLength(1)
+    expect(result[0]).not.toHaveProperty("id")
+    expect(result[0].type).toBe("message")
+    expect(result[0].role).toBe("user")
+    expect(result[0].content).toBe("hello")
+  })
+
+  it("strips id from reasoning item", () => {
+    const input = [
+      { id: "reasoning-123", type: "reasoning", thinking: "let me think about this" },
+    ]
+    const result = sanitizeItemIds(input as any)
+    expect(result).toHaveLength(1)
+    expect(result[0]).not.toHaveProperty("id")
+    expect(result[0].type).toBe("reasoning")
+    expect(result[0].thinking).toBe("let me think about this")
+  })
+
+  it("strips id from message but preserves id on matched function_call", () => {
+    const input = [
+      { id: "msg-1", type: "message", role: "user", content: "call a function" },
+      { id: "call-1", type: "function_call", call_id: "call-1", name: "test" },
+      { type: "function_call_output", call_id: "call-1", output: "result" },
+    ]
+    const result = sanitizeItemIds(input as any)
+    expect(result).toHaveLength(3)
+    // Message id should be stripped
+    expect(result[0]).not.toHaveProperty("id")
+    expect(result[0].type).toBe("message")
+    // Function call id should be preserved (has matching output)
+    expect(result[1].id).toBe("call-1")
+    expect(result[1].type).toBe("function_call")
+    // Output preserved
+    expect(result[2].type).toBe("function_call_output")
+  })
 })
 
 describe("transformRequestBody", () => {
