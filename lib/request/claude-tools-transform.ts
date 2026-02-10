@@ -112,6 +112,10 @@ export function transformClaudeResponse(response: Response): Response {
     return response;
   }
 
+  if (!response.ok) {
+    return response;
+  }
+
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
