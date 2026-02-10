@@ -86,7 +86,9 @@ describe("E2E: item_reference sanitization", () => {
       assertCleanBody(transformed, "transformRequestForCodex")
 
       const funcCall = transformed.input?.find((item: any) => item.type === "function_call")
-      expect(funcCall?.id, "function_call id should be preserved when output matches").toBe("fc_abc123")
+      expect(funcCall, "function_call should be preserved").toBeDefined()
+      expect(funcCall?.id, "function_call id should be stripped in stateless mode").toBeUndefined()
+      expect(funcCall?.call_id, "function_call call_id should be preserved").toBe("call_abc123")
 
       const messages = transformed.input?.filter((item: any) => item.type === "message")
       for (const msg of messages ?? []) {

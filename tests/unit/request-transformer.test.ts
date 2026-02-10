@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { 
   normalizeModel, 
-  filterInput, 
   getReasoningConfig,
   addCodexBridgeMessage,
   sanitizeItemIds,
@@ -43,47 +42,6 @@ describe("normalizeModel", () => {
 
     it("returns gpt-5.3-codex for generic codex", () => {
       expect(normalizeModel("codex")).toBe("gpt-5.3-codex")
-    })
-  })
-})
-
-describe("filterInput", () => {
-  it("returns input unchanged for non-array input", () => {
-    expect(filterInput(undefined)).toBeUndefined()
-    expect(filterInput(null as any)).toBeNull()
-  })
-
-  it("passes through all items unchanged (filtering done by stripItemIds in transform pipeline)", () => {
-    const input = [
-      { type: "message", role: "user", content: "hello" },
-      { type: "item_reference", role: "system" },
-      { type: "message", role: "assistant", content: "hi" },
-    ]
-    const result = filterInput(input)
-    expect(result).toHaveLength(3)
-  })
-
-  it("passes through items with id fields unchanged", () => {
-    const input = [
-      { id: "msg-1", type: "message", role: "user", content: "hello" },
-      { id: "msg-2", type: "message", role: "assistant", content: "hi" },
-    ]
-    const result = filterInput(input)
-    expect(result?.[0]?.id).toBe("msg-1")
-    expect(result?.[1]?.id).toBe("msg-2")
-  })
-
-  it("preserves all fields unchanged", () => {
-    const input = [
-      { id: "msg-1", type: "message", role: "user", content: "hello", metadata: { key: "value" } },
-    ]
-    const result = filterInput(input)
-    expect(result?.[0]).toEqual({
-      id: "msg-1",
-      type: "message",
-      role: "user",
-      content: "hello",
-      metadata: { key: "value" },
     })
   })
 })
@@ -162,37 +120,40 @@ describe("sanitizeItemIds", () => {
     expect(result[0].call_id).toBe("call-1")
   })
 
-  it("preserves id on function_call with matching function_call_output", () => {
+  it("strips id from function_call even with matching function_call_output (stateless mode)", () => {
     const input = [
       { id: "msg-1", type: "function_call", call_id: "call-1", name: "test" },
       { type: "function_call_output", call_id: "call-1", output: "result" },
     ]
     const result = sanitizeItemIds(input as any)
     expect(result).toHaveLength(2)
-    expect(result[0].id).toBe("msg-1")
+    expect(result[0]).not.toHaveProperty("id")
     expect(result[0].type).toBe("function_call")
+    expect(result[0].call_id).toBe("call-1")
   })
 
-  it("preserves id on local_shell_call with matching local_shell_call_output", () => {
+  it("strips id from local_shell_call even with matching output (stateless mode)", () => {
     const input = [
       { id: "msg-2", type: "local_shell_call", call_id: "call-2", command: "ls" },
       { type: "local_shell_call_output", call_id: "call-2", output: "files" },
     ]
     const result = sanitizeItemIds(input as any)
     expect(result).toHaveLength(2)
-    expect(result[0].id).toBe("msg-2")
+    expect(result[0]).not.toHaveProperty("id")
     expect(result[0].type).toBe("local_shell_call")
+    expect(result[0].call_id).toBe("call-2")
   })
 
-  it("preserves id on custom_tool_call with matching custom_tool_call_output", () => {
+  it("strips id from custom_tool_call even with matching output (stateless mode)", () => {
     const input = [
       { id: "msg-3", type: "custom_tool_call", call_id: "call-3", tool: "custom" },
       { type: "custom_tool_call_output", call_id: "call-3", output: "data" },
     ]
     const result = sanitizeItemIds(input as any)
     expect(result).toHaveLength(2)
-    expect(result[0].id).toBe("msg-3")
+    expect(result[0]).not.toHaveProperty("id")
     expect(result[0].type).toBe("custom_tool_call")
+    expect(result[0].call_id).toBe("call-3")
   })
 
   it("passes through items without id field unchanged", () => {
@@ -212,7 +173,7 @@ describe("sanitizeItemIds", () => {
     expect(result).toHaveLength(0)
   })
 
-  it("handles mixed items with some matched and some not", () => {
+  it("handles mixed items - strips all IDs in stateless mode", () => {
     const input = [
       { id: "msg-1", type: "function_call", call_id: "call-1", name: "test1" },
       { id: "msg-2", type: "function_call", call_id: "call-2", name: "test2" },
@@ -221,9 +182,10 @@ describe("sanitizeItemIds", () => {
     ]
     const result = sanitizeItemIds(input as any)
     expect(result).toHaveLength(4)
-    // First call has matching output - id preserved
-    expect(result[0].id).toBe("msg-1")
-    // Second call has no matching output - id stripped
+    // All IDs stripped in stateless mode
+    expect(result[0]).not.toHaveProperty("id")
+    expect(result[0].type).toBe("function_call")
+    expect(result[0].call_id).toBe("call-1")
     expect(result[1]).not.toHaveProperty("id")
     expect(result[1].type).toBe("function_call")
     expect(result[1].call_id).toBe("call-2")
@@ -240,8 +202,8 @@ describe("sanitizeItemIds", () => {
     ]
     const result = sanitizeItemIds(input as any)
     expect(result).toHaveLength(2)
-    // Should match after trimming
-    expect(result[0].id).toBe("msg-1")
+    expect(result[0]).not.toHaveProperty("id")
+    expect(result[0].call_id).toBe(" call-1 ")
   })
 
   it("strips id from message item", () => {
@@ -267,7 +229,7 @@ describe("sanitizeItemIds", () => {
     expect(result[0].thinking).toBe("let me think about this")
   })
 
-  it("strips id from message but preserves id on matched function_call", () => {
+  it("strips id from both message and function_call in stateless mode", () => {
     const input = [
       { id: "msg-1", type: "message", role: "user", content: "call a function" },
       { id: "call-1", type: "function_call", call_id: "call-1", name: "test" },
@@ -275,13 +237,11 @@ describe("sanitizeItemIds", () => {
     ]
     const result = sanitizeItemIds(input as any)
     expect(result).toHaveLength(3)
-    // Message id should be stripped
     expect(result[0]).not.toHaveProperty("id")
     expect(result[0].type).toBe("message")
-    // Function call id should be preserved (has matching output)
-    expect(result[1].id).toBe("call-1")
+    expect(result[1]).not.toHaveProperty("id")
     expect(result[1].type).toBe("function_call")
-    // Output preserved
+    expect(result[1].call_id).toBe("call-1")
     expect(result[2].type).toBe("function_call_output")
   })
 })

@@ -79,71 +79,37 @@ function resolveInclude(body: RequestBody): string[] {
   return include
 }
 
-export function filterInput(
-  input: InputItem[] | undefined,
-): InputItem[] | undefined {
-  if (!Array.isArray(input)) return input
-
-  return input
-}
 
 /**
- * Sanitizes item IDs in the input array:
- * - Filters out `item_reference` items (safety net)
- * - Preserves `id` field on call items that have matching outputs (by call_id)
- * - Strips `id` field from call items without matching outputs
- * - Passes through items without `id` field unchanged
+ * Sanitizes item IDs in the input array for stateless (store:false) mode:
+ * - Filters out `item_reference` items (AI SDK construct, not in Codex API spec)
+ * - Strips `id` field from ALL items (stateless = no IDs, matches Codex CLI behavior)
+ * - Preserves `call_id` and other linkage fields for tool-output association
  */
 export function sanitizeItemIds(input: InputItem[]): InputItem[] {
-  // First pass: collect all call_id values from output items
-  const outputCallIds = new Set<string>();
-  
-  for (const item of input) {
-    if (
-      item.type === "function_call_output" ||
-      item.type === "local_shell_call_output" ||
-      item.type === "custom_tool_call_output"
-    ) {
-      const callId = (item as { call_id?: unknown }).call_id;
-      if (typeof callId === "string" && callId.trim().length > 0) {
-        outputCallIds.add(callId.trim());
-      }
-    }
-  }
+  const strippedIds: string[] = []
 
-  // Second pass: filter and conditionally strip IDs
-  return input
+  const result = input
     .filter((item) => item.type !== "item_reference")
     .map((item) => {
-      // If item doesn't have an id field, return as-is
-      if (!("id" in item)) {
-        return item;
+      if (!("id" in item)) return item
+
+      const itemId = (item as { id?: unknown }).id
+      if (typeof itemId === "string") {
+        strippedIds.push(itemId)
       }
 
-      // Check if this is a call item
-      const isCallItem =
-        item.type === "function_call" ||
-        item.type === "local_shell_call" ||
-        item.type === "custom_tool_call";
+      const { id, ...rest } = item as InputItem & { id: unknown }
+      return rest as InputItem
+    })
 
-      // Only preserve id for call items with matching output
-      if (isCallItem) {
-        const callId = (item as { call_id?: unknown }).call_id;
-        const hasMatchingOutput =
-          typeof callId === "string" &&
-          callId.trim().length > 0 &&
-          outputCallIds.has(callId.trim());
+  if (strippedIds.length > 0) {
+    logDebug(`Stripped ${strippedIds.length} item IDs from input (stateless mode)`, {
+      ids: strippedIds,
+    })
+  }
 
-        if (hasMatchingOutput) {
-          // Preserve the id field for matched calls
-          return item;
-        }
-      }
-
-      // Strip id from all other items (message, reasoning, unmatched calls, etc.)
-      const { id, ...rest } = item as InputItem & { id: unknown };
-      return rest as InputItem;
-    });
+  return result
 }
 
 
@@ -224,12 +190,15 @@ export async function transformRequestBody(
     },
   )
 
-   body.model = normalizedModel
-   body.stream = true
-   body.store = false
-   delete body.previousResponseId
-   delete body.previous_response_id
-   body.instructions = codexInstructions
+  const hadPreviousResponseId = !!(body.previousResponseId || body.previous_response_id)
+  const hadItemReferences = Array.isArray(body.input) && body.input.some((item) => item.type === "item_reference")
+
+  body.model = normalizedModel
+  body.stream = true
+  body.store = false
+  delete body.previousResponseId
+  delete body.previous_response_id
+  body.instructions = codexInstructions
 
   if (body.input && Array.isArray(body.input)) {
     body.input = sanitizeItemIds(body.input)
@@ -238,6 +207,25 @@ export async function transformRequestBody(
 
     if (body.input) {
       body.input = normalizeOrphanedToolOutputs(body.input)
+
+      if (hadPreviousResponseId || hadItemReferences) {
+        const hasAssistantOrToolHistory = body.input.some((item) =>
+          item.role === "assistant" ||
+          item.type === "function_call" ||
+          item.type === "function_call_output" ||
+          item.type === "local_shell_call" ||
+          item.type === "local_shell_call_output" ||
+          item.type === "custom_tool_call" ||
+          item.type === "custom_tool_call_output"
+        )
+        if (!hasAssistantOrToolHistory) {
+          logDebug(
+            "WARNING: Request had previous_response_id/item_reference but input lacks assistant/tool history. " +
+            "Context may be lost in store:false mode. Upstream should send full conversation history in input.",
+            { hadPreviousResponseId, hadItemReferences, inputLength: body.input.length },
+          )
+        }
+      }
     }
   }
 
