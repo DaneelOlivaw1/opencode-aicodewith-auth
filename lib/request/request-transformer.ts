@@ -87,16 +87,60 @@ export function filterInput(
   return input
 }
 
-function stripItemIds(input: InputItem[]): InputItem[] {
+/**
+ * Sanitizes item IDs in the input array:
+ * - Filters out `item_reference` items (safety net)
+ * - Preserves `id` field on call items that have matching outputs (by call_id)
+ * - Strips `id` field from call items without matching outputs
+ * - Passes through items without `id` field unchanged
+ */
+export function sanitizeItemIds(input: InputItem[]): InputItem[] {
+  // First pass: collect all call_id values from output items
+  const outputCallIds = new Set<string>();
+  
+  for (const item of input) {
+    if (
+      item.type === "function_call_output" ||
+      item.type === "local_shell_call_output" ||
+      item.type === "custom_tool_call_output"
+    ) {
+      const callId = (item as { call_id?: unknown }).call_id;
+      if (typeof callId === "string" && callId.trim().length > 0) {
+        outputCallIds.add(callId.trim());
+      }
+    }
+  }
+
+  // Second pass: filter and conditionally strip IDs
   return input
     .filter((item) => item.type !== "item_reference")
     .map((item) => {
-      if ("id" in item) {
-        const { id, ...rest } = item as InputItem & { id: unknown }
-        return rest as InputItem
+      // Check if this is a call item
+      const isCallItem =
+        item.type === "function_call" ||
+        item.type === "local_shell_call" ||
+        item.type === "custom_tool_call";
+
+      if (!isCallItem || !("id" in item)) {
+        return item;
       }
-      return item
-    })
+
+      // Check if this call has a matching output
+      const callId = (item as { call_id?: unknown }).call_id;
+      const hasMatchingOutput =
+        typeof callId === "string" &&
+        callId.trim().length > 0 &&
+        outputCallIds.has(callId.trim());
+
+      if (hasMatchingOutput) {
+        // Preserve the id field for matched calls
+        return item;
+      }
+
+      // Strip id from unmatched calls
+      const { id, ...rest } = item as InputItem & { id: unknown };
+      return rest as InputItem;
+    });
 }
 
 
@@ -177,12 +221,13 @@ export async function transformRequestBody(
     },
   )
 
-  body.model = normalizedModel
-  body.stream = true
-  body.instructions = codexInstructions
+   body.model = normalizedModel
+   body.stream = true
+   body.store = false
+   body.instructions = codexInstructions
 
   if (body.input && Array.isArray(body.input)) {
-    body.input = stripItemIds(body.input)
+    body.input = sanitizeItemIds(body.input)
     body.input = filterOpenCodeSystemPrompts(body.input)
     body.input = addCodexBridgeMessage(body.input, !!body.tools)
 
