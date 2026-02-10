@@ -438,16 +438,12 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
     "chat.params": async (input, output) => {
       if (input.model.providerID !== PROVIDER_ID) return
 
-      // Codex models: inject store: false into providerOptions
+      // Codex models: inject store: false into options
+      // OpenCode wraps options into providerOptions.openai via ProviderTransform.providerOptions()
+      // So we set store at the options level, NOT nested under providerOptions.openai
       if (isCodexModel(input.model.id)) {
         const next = { ...output.options }
-        next.providerOptions = {
-          ...next.providerOptions,
-          openai: {
-            ...next.providerOptions?.openai,
-            store: false,
-          },
-        }
+        next.store = false
         output.options = next
         return
       }
