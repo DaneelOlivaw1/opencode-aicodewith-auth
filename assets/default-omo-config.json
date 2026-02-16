@@ -61,7 +61,8 @@
   },
   "categories": {
     "visual-engineering": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gemini-3-pro",
+      "variant": "high"
     },
     "ultrabrain": {
       "model": "aicodewith/gpt-5.3-codex",
