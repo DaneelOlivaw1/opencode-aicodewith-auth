@@ -352,7 +352,7 @@ export const AicodewithCodexAuthPlugin: Plugin = async (ctx: PluginInput) => {
             const transformation = await transformRequestForCodex(init)
             let requestInit = transformation?.updatedInit ?? init
 
-            if (!transformation && init.body) {
+            if (!transformation && init?.body) {
               const sanitized = sanitizeRequestBody(init.body as string)
               requestInit = { ...init, body: sanitized }
             }
