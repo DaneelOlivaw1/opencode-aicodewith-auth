@@ -261,8 +261,8 @@ async function runTests() {
     const newAgentAssignment = `"test-agent": getFullModelId("gpt-5.2"),`
     
     const modifiedRegistry = originalRegistry.replace(
-      '"sisyphus": getFullModelId("claude-sonnet-4-5-20250929"),',
-      `"sisyphus": getFullModelId("claude-sonnet-4-5-20250929"),\n    ${newAgentAssignment}`
+      '"sisyphus": getFullModelId("claude-sonnet-4-6"),',
+      `"sisyphus": getFullModelId("claude-sonnet-4-6"),\n    ${newAgentAssignment}`
     )
     
     const modifiedWithType = modifiedRegistry.replace(

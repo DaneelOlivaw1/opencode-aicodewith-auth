@@ -15,8 +15,8 @@ describe("createAicodewith", () => {
     })
 
     it("routes claude-sonnet to anthropic provider", () => {
-      const model = provider("claude-sonnet-4-5-20250929")
-      expect(model.modelId).toBe("claude-sonnet-4-5-20250929")
+      const model = provider("claude-sonnet-4-6")
+      expect(model.modelId).toBe("claude-sonnet-4-6")
       expect(model.provider).toBe("anthropic.messages")
     })
 

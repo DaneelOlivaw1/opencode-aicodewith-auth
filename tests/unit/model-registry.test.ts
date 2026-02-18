@@ -135,7 +135,7 @@ describe("Model Registry", () => {
     it("migrates third-party variants to non-third-party", () => {
       const migrations = buildModelMigrations()
       expect(migrations["claude-opus-4-6-20260205-third-party"]).toBe("claude-opus-4-6-20260205")
-      expect(migrations["claude-sonnet-4-5-20250929-third-party"]).toBe("claude-sonnet-4-5-20250929")
+      expect(migrations["claude-sonnet-4-5-20250929-third-party"]).toBe("claude-sonnet-4-6")
       expect(migrations["claude-haiku-4-5-20251001-third-party"]).toBe("claude-haiku-4-5-20251001")
     })
   })

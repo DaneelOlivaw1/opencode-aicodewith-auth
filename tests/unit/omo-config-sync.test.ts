@@ -16,13 +16,13 @@ const mockAccess = vi.mocked(access)
 const DEFAULT_OMO_CONFIG = {
   $schema: "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
   agents: {
-    sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" },
+    sisyphus: { model: "aicodewith/claude-sonnet-4-6", variant: "max" },
     oracle: { model: "aicodewith/gpt-5.2", variant: "high" },
     build: { model: "aicodewith/claude-opus-4-6-20260205" },
     momus: { model: "aicodewith/gpt-5.2", variant: "medium" },
   },
   categories: {
-    quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+    quick: { model: "aicodewith/claude-sonnet-4-6" },
     ultrabrain: { model: "aicodewith/gpt-5.3-codex", variant: "high" },
     deep: { model: "aicodewith/gpt-5.3-codex", variant: "medium" },
   },
@@ -91,9 +91,9 @@ describe("OMO Config Sync", () => {
       expect(mockWriteFile).toHaveBeenCalled()
       const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
       
-      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" })
+      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-6", variant: "max" })
       expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2", variant: "high" })
-      expect(writtenContent.categories.quick).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929" })
+      expect(writtenContent.categories.quick).toEqual({ model: "aicodewith/claude-sonnet-4-6" })
       expect(writtenContent.categories.ultrabrain).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "high" })
     })
 
@@ -110,7 +110,7 @@ describe("OMO Config Sync", () => {
       mockAccess.mockResolvedValue(undefined)
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
-          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" },
+          sisyphus: { model: "aicodewith/claude-sonnet-4-6", variant: "max" },
         },
         categories: {},
       }))
@@ -127,7 +127,7 @@ describe("OMO Config Sync", () => {
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {},
         categories: {
-          quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+          quick: { model: "aicodewith/claude-sonnet-4-6" },
         },
       }))
       
@@ -175,7 +175,7 @@ describe("OMO Config Sync", () => {
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
           sisyphus: { 
-            model: "aicodewith/claude-sonnet-4-5-20250929",
+            model: "aicodewith/claude-sonnet-4-6",
             temperature: 0.5,
             customField: "user value",
           },
@@ -280,7 +280,7 @@ describe("OMO Config Sync", () => {
       mockAccess.mockResolvedValue(undefined)
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
-          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+          sisyphus: { model: "aicodewith/claude-sonnet-4-6" },
           oracle: { model: "aicodewith/gpt-5.2" },
           build: { model: "aicodewith/claude-opus-4-6-20260205" },
         },
@@ -302,7 +302,7 @@ describe("OMO Config Sync", () => {
         categories: {
           ultrabrain: { model: "aicodewith/gpt-5.3-codex" },
           deep: { model: "aicodewith/gpt-5.3-codex" },
-          quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+          quick: { model: "aicodewith/claude-sonnet-4-6" },
         },
       }))
       
@@ -348,7 +348,7 @@ describe("OMO Config Sync", () => {
       mockAccess.mockResolvedValue(undefined)
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
-          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "low" },
+          sisyphus: { model: "aicodewith/claude-sonnet-4-6", variant: "low" },
           oracle: { model: "aicodewith/gpt-5.2", variant: "xhigh" },
         },
         categories: {
@@ -391,13 +391,13 @@ describe("OMO Config Sync", () => {
       const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
       
       // Verify all variant fields from default config are present
-      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" })
+      expect(writtenContent.agents.sisyphus).toEqual({ model: "aicodewith/claude-sonnet-4-6", variant: "max" })
       expect(writtenContent.agents.oracle).toEqual({ model: "aicodewith/gpt-5.2", variant: "high" })
       expect(writtenContent.agents.momus).toEqual({ model: "aicodewith/gpt-5.2", variant: "medium" })
       expect(writtenContent.agents.build).toEqual({ model: "aicodewith/claude-opus-4-6-20260205" })
       expect(writtenContent.categories.ultrabrain).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "high" })
       expect(writtenContent.categories.deep).toEqual({ model: "aicodewith/gpt-5.3-codex", variant: "medium" })
-      expect(writtenContent.categories.quick).toEqual({ model: "aicodewith/claude-sonnet-4-5-20250929" })
+      expect(writtenContent.categories.quick).toEqual({ model: "aicodewith/claude-sonnet-4-6" })
     })
 
     it("preserves user extra fields alongside variant during sync", async () => {
@@ -405,7 +405,7 @@ describe("OMO Config Sync", () => {
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
           sisyphus: { 
-            model: "aicodewith/claude-sonnet-4-5-20250929",
+            model: "aicodewith/claude-sonnet-4-6",
             variant: "max",
             temperature: 0.7,
           },
@@ -417,7 +417,7 @@ describe("OMO Config Sync", () => {
       
       const writtenContent = JSON.parse(mockWriteFile.mock.calls[0][1] as string)
       // All fields should be preserved
-      expect(writtenContent.agents.sisyphus.model).toBe("aicodewith/claude-sonnet-4-5-20250929")
+      expect(writtenContent.agents.sisyphus.model).toBe("aicodewith/claude-sonnet-4-6")
       expect(writtenContent.agents.sisyphus.variant).toBe("max")
       expect(writtenContent.agents.sisyphus.temperature).toBe(0.7)
     })
@@ -428,13 +428,13 @@ describe("OMO Config Sync", () => {
       mockAccess.mockResolvedValue(undefined)
       mockReadFile.mockResolvedValue(JSON.stringify({
         agents: {
-          sisyphus: { model: "aicodewith/claude-sonnet-4-5-20250929", variant: "max" },
+          sisyphus: { model: "aicodewith/claude-sonnet-4-6", variant: "max" },
           oracle: { model: "aicodewith/gpt-5.2", variant: "high" },
           build: { model: "aicodewith/claude-opus-4-6-20260205" },
           momus: { model: "aicodewith/gpt-5.2", variant: "medium" },
         },
         categories: {
-          quick: { model: "aicodewith/claude-sonnet-4-5-20250929" },
+          quick: { model: "aicodewith/claude-sonnet-4-6" },
           ultrabrain: { model: "aicodewith/gpt-5.3-codex", variant: "high" },
           deep: { model: "aicodewith/gpt-5.3-codex", variant: "medium" },
         },

@@ -15,7 +15,7 @@ describe("Migration Rules", () => {
     it("migrates third-party variants to non-third-party", () => {
       expect(MODEL_MIGRATIONS["claude-opus-4-6-20260205-third-party"]).toBe("claude-opus-4-6-20260205")
       expect(MODEL_MIGRATIONS["claude-opus-4-5-20251101-third-party"]).toBe("claude-opus-4-6-20260205")
-      expect(MODEL_MIGRATIONS["claude-sonnet-4-5-20250929-third-party"]).toBe("claude-sonnet-4-5-20250929")
+      expect(MODEL_MIGRATIONS["claude-sonnet-4-5-20250929-third-party"]).toBe("claude-sonnet-4-6")
       expect(MODEL_MIGRATIONS["claude-haiku-4-5-20251001-third-party"]).toBe("claude-haiku-4-5-20251001")
     })
   })
@@ -32,9 +32,9 @@ describe("Migration Rules", () => {
       expect(MODEL_MIGRATIONS[nonAicodewithModel]).toBeUndefined()
     })
 
-    it("does NOT migrate non-deprecated aicodewith models", () => {
+    it("migrates deprecated aicodewith sonnet-4-5 to sonnet-4-6", () => {
       const currentModel = "aicodewith/claude-sonnet-4-5-20250929"
-      expect(MODEL_MIGRATIONS[currentModel]).toBeUndefined()
+      expect(MODEL_MIGRATIONS[currentModel]).toBe("aicodewith/claude-sonnet-4-6")
     })
   })
 
@@ -42,7 +42,7 @@ describe("Migration Rules", () => {
     it("OMO_MODEL_ASSIGNMENTS contains current model versions for custom agents", () => {
       expect(OMO_MODEL_ASSIGNMENTS.agents.build).toBe("aicodewith/claude-opus-4-6-20260205")
       expect(OMO_MODEL_ASSIGNMENTS.agents.plan).toBe("aicodewith/claude-opus-4-6-20260205")
-      expect(OMO_MODEL_ASSIGNMENTS.agents["sisyphus-junior"]).toBe("aicodewith/claude-sonnet-4-5-20250929")
+      expect(OMO_MODEL_ASSIGNMENTS.agents["sisyphus-junior"]).toBe("aicodewith/claude-sonnet-4-6")
     })
 
     it("OMO_MODEL_ASSIGNMENTS does NOT contain deprecated models", () => {
@@ -66,6 +66,8 @@ describe("Migration Rules", () => {
       { input: "anthropic/claude-opus-4-5-20251101", shouldMigrate: false },
       { input: "openai/gpt-4o", shouldMigrate: false },
       { input: "aicodewith/gpt-5.2", shouldMigrate: false },
+      { input: "aicodewith/claude-sonnet-4-5-20250929", shouldMigrate: true },
+      { input: "claude-sonnet-4-5-20250929", shouldMigrate: true },
     ]
 
     for (const { input, shouldMigrate } of testCases) {
