@@ -14,7 +14,7 @@
       "variant": "high"
     },
     "librarian": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "explore": {
       "model": "aicodewith/claude-haiku-4-5-20251001"
@@ -35,7 +35,7 @@
       "variant": "medium"
     },
     "atlas": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "build": {
       "model": "aicodewith/claude-opus-4-6-20260205"
@@ -44,13 +44,13 @@
       "model": "aicodewith/claude-opus-4-6-20260205"
     },
     "sisyphus-junior": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "OpenCode-Builder": {
       "model": "aicodewith/claude-opus-4-6-20260205"
     },
     "general": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "frontend-ui-ux-engineer": {
       "model": "aicodewith/gemini-3-pro"
@@ -80,10 +80,10 @@
       "model": "aicodewith/claude-haiku-4-5-20251001"
     },
     "unspecified-low": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "unspecified-high": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "writing": {
       "model": "aicodewith/gemini-3-pro"
@@ -95,7 +95,7 @@
       "model": "aicodewith/gpt-5.2"
     },
     "data-analysis": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     }
   }
 }
