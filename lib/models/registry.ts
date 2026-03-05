@@ -221,6 +221,14 @@ export const MODELS: ModelDefinition[] = [
     limit: { context: 1048576, output: 65536 },
     modalities: { input: ["text", "image"], output: ["text"] },
   },
+  {
+    id: "gemini-3.1-pro-preview",
+    family: "gemini",
+    displayName: "Gemini 3.1 Pro Preview",
+    version: "3.1",
+    limit: { context: 1048576, output: 65536 },
+    modalities: { input: ["text", "image"], output: ["text"] },
+  },
 ]
 
 // ============================================
