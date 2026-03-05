@@ -20,7 +20,8 @@
       "model": "aicodewith/claude-haiku-4-5-20251001"
     },
     "multimodal-looker": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gpt-5.3-codex",
+      "variant": "medium"
     },
     "prometheus": {
       "model": "aicodewith/claude-opus-4-6-20260205",
