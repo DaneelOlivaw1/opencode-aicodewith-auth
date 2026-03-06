@@ -13,6 +13,7 @@ export type ModelFamily =
   | "gpt-5.2-codex"
   | "codex-max"
   | "codex"
+  | "gpt-5.4"
   | "gpt-5.2"
   | "gpt-5.1"
 
@@ -31,6 +32,9 @@ export function getModelFamily(normalizedModel: string): ModelFamily {
     normalizedModel.startsWith("codex-")
   ) {
     return "codex"
+  }
+  if (normalizedModel.includes("gpt-5.4")) {
+    return "gpt-5.4"
   }
   if (normalizedModel.includes("gpt-5.2")) {
     return "gpt-5.2"

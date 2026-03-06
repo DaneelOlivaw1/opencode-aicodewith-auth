@@ -35,6 +35,10 @@ export function normalizeModel(model: string | undefined): string {
     return "gpt-5.3-codex"
   }
 
+  if (normalized.includes("gpt-5.4") || normalized.includes("gpt 5.4")) {
+    return "gpt-5.4"
+  }
+
   if (normalized.includes("gpt-5.2") || normalized.includes("gpt 5.2")) {
     return "gpt-5.2"
   }
@@ -42,6 +46,9 @@ export function normalizeModel(model: string | undefined): string {
   if (normalized.includes("codex")) {
     return "gpt-5.3-codex"
   }
+
+  return "gpt-5.3-codex"
+}
 
   return "gpt-5.3-codex"
 }

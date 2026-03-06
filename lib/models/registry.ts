@@ -57,6 +57,16 @@ export const MODELS: ModelDefinition[] = [
     aliases: ["gpt-5.3-codex", "gpt 5.3 codex", "codex"],
   },
   {
+    id: "gpt-5.4",
+    family: "gpt",
+    displayName: "GPT-5.4",
+    version: "5.4",
+    limit: { context: 400000, output: 128000 },
+    modalities: { input: ["text", "image"], output: ["text"] },
+    reasoning: "xhigh",
+    aliases: ["gpt-5.4", "gpt 5.4"],
+  },
+  {
     id: "gpt-5.2",
     family: "gpt",
     displayName: "GPT-5.2",
