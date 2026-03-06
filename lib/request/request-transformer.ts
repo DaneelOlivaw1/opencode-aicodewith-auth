@@ -50,9 +50,6 @@ export function normalizeModel(model: string | undefined): string {
   return "gpt-5.3-codex"
 }
 
-  return "gpt-5.3-codex"
-}
-
 function resolveReasoningConfig(modelName: string, body: RequestBody): ReasoningConfig {
   const providerOpenAI = body.providerOptions?.openai
   const existingEffort =

@@ -43,6 +43,24 @@ describe("normalizeModel", () => {
     it("returns gpt-5.3-codex for generic codex", () => {
       expect(normalizeModel("codex")).toBe("gpt-5.3-codex")
     })
+
+    it("returns gpt-5.3-codex for unknown models", () => {
+      expect(normalizeModel("unknown-model")).toBe("gpt-5.3-codex")
+      expect(normalizeModel("random-123")).toBe("gpt-5.3-codex")
+    })
+  })
+
+  describe("GPT-5.4 models", () => {
+    it("normalizes gpt-5.4 variants", () => {
+      expect(normalizeModel("gpt-5.4")).toBe("gpt-5.4")
+      expect(normalizeModel("GPT-5.4")).toBe("gpt-5.4")
+      expect(normalizeModel("gpt 5.4")).toBe("gpt-5.4")
+    })
+
+    it("strips provider prefix for gpt-5.4", () => {
+      expect(normalizeModel("aicodewith/gpt-5.4")).toBe("gpt-5.4")
+      expect(normalizeModel("openai/gpt-5.4")).toBe("gpt-5.4")
+    })
   })
 })
 

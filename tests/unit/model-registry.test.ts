@@ -58,7 +58,7 @@ describe("Model Registry", () => {
       expect(ids).toContain("gpt-5.3-codex")
       expect(ids).toContain("gpt-5.2")
       expect(ids).toContain("claude-opus-4-6-20260205")
-      expect(ids).toContain("gemini-3-pro")
+      expect(ids).toContain("gemini-3.1-pro-preview")
     })
   })
 

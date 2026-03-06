@@ -224,20 +224,24 @@ export const MODELS: ModelDefinition[] = [
 
   // Gemini Models
   {
-    id: "gemini-3-pro",
-    family: "gemini",
-    displayName: "Gemini 3 Pro",
-    version: "3",
-    limit: { context: 1048576, output: 65536 },
-    modalities: { input: ["text", "image"], output: ["text"] },
-  },
-  {
     id: "gemini-3.1-pro-preview",
     family: "gemini",
     displayName: "Gemini 3.1 Pro Preview",
     version: "3.1",
     limit: { context: 1048576, output: 65536 },
     modalities: { input: ["text", "image"], output: ["text"] },
+  },
+
+  // Deprecated Gemini Models
+  {
+    id: "gemini-3-pro",
+    family: "gemini",
+    displayName: "Gemini 3 Pro (deprecated)",
+    version: "3",
+    limit: { context: 1048576, output: 65536 },
+    modalities: { input: ["text", "image"], output: ["text"] },
+    deprecated: true,
+    replacedBy: "gemini-3.1-pro-preview",
   },
 ]
 
@@ -334,40 +338,73 @@ export interface OmoModelAssignment {
   categories: Record<OmoCategoryName, string>
 }
 
-const getFullModelId = (id: string) => `${PROVIDER_ID}/${id}`
+function getLatestByFamily(family: ModelFamily): string {
+  const activeModels = MODELS.filter(m => !m.deprecated && m.family === family)
+  if (activeModels.length === 0) {
+    throw new Error(`No active models found for family: ${family}`)
+  }
+  
+  const latest = activeModels.sort((a, b) => {
+    const versionA = parseFloat(a.version)
+    const versionB = parseFloat(b.version)
+    return versionB - versionA
+  })[0]
+  
+  return `${PROVIDER_ID}/${latest.id}`
+}
+
+function getLatestClaudeByTier(tier: "opus" | "sonnet" | "haiku"): string {
+  const claudeModels = MODELS.filter(m => 
+    !m.deprecated && 
+    m.family === "claude" && 
+    m.id.includes(tier)
+  )
+  
+  if (claudeModels.length === 0) {
+    throw new Error(`No active Claude ${tier} models found`)
+  }
+  
+  const latest = claudeModels.sort((a, b) => {
+    const versionA = parseFloat(a.version)
+    const versionB = parseFloat(b.version)
+    return versionB - versionA
+  })[0]
+  
+  return `${PROVIDER_ID}/${latest.id}`
+}
 
 export const OMO_MODEL_ASSIGNMENTS: OmoModelAssignment = {
   agents: {
-    "sisyphus": getFullModelId("claude-sonnet-4-6"),
-    "hephaestus": getFullModelId("claude-sonnet-4-6"),
-    "oracle": getFullModelId("gpt-5.2"),
-    "librarian": getFullModelId("claude-sonnet-4-6"),
-    "explore": getFullModelId("claude-sonnet-4-6"),
-    "multimodal-looker": getFullModelId("gemini-3-pro"),
-    "prometheus": getFullModelId("gpt-5.2"),
-    "metis": getFullModelId("gpt-5.2"),
-    "momus": getFullModelId("gpt-5.2"),
-    "atlas": getFullModelId("claude-sonnet-4-6"),
-    "build": getFullModelId("claude-opus-4-6-20260205"),
-    "plan": getFullModelId("claude-opus-4-6-20260205"),
-    "sisyphus-junior": getFullModelId("claude-sonnet-4-6"),
-    "OpenCode-Builder": getFullModelId("claude-opus-4-6-20260205"),
-    "general": getFullModelId("claude-sonnet-4-6"),
-    "frontend-ui-ux-engineer": getFullModelId("gemini-3-pro"),
-    "document-writer": getFullModelId("gemini-3-pro"),
+    "sisyphus": getLatestClaudeByTier("sonnet"),
+    "hephaestus": getLatestClaudeByTier("sonnet"),
+    "oracle": getLatestByFamily("gpt"),
+    "librarian": getLatestClaudeByTier("sonnet"),
+    "explore": getLatestClaudeByTier("sonnet"),
+    "multimodal-looker": getLatestByFamily("gemini"),
+    "prometheus": getLatestByFamily("gpt"),
+    "metis": getLatestByFamily("gpt"),
+    "momus": getLatestByFamily("gpt"),
+    "atlas": getLatestClaudeByTier("sonnet"),
+    "build": getLatestClaudeByTier("opus"),
+    "plan": getLatestClaudeByTier("opus"),
+    "sisyphus-junior": getLatestClaudeByTier("sonnet"),
+    "OpenCode-Builder": getLatestClaudeByTier("opus"),
+    "general": getLatestClaudeByTier("sonnet"),
+    "frontend-ui-ux-engineer": getLatestByFamily("gemini"),
+    "document-writer": getLatestByFamily("gemini"),
   },
   categories: {
-    "visual-engineering": getFullModelId("gemini-3-pro"),
-    "ultrabrain": getFullModelId("gemini-3-pro"),
-    "deep": getFullModelId("gemini-3-pro"),
-    "artistry": getFullModelId("gemini-3-pro"),
-    "quick": getFullModelId("claude-sonnet-4-6"),
-    "unspecified-low": getFullModelId("claude-sonnet-4-6"),
-    "unspecified-high": getFullModelId("gpt-5.2"),
-    "writing": getFullModelId("gemini-3-pro"),
-    "visual": getFullModelId("gemini-3-pro"),
-    "business-logic": getFullModelId("gpt-5.2"),
-    "data-analysis": getFullModelId("claude-sonnet-4-6"),
+    "visual-engineering": getLatestByFamily("gemini"),
+    "ultrabrain": getLatestByFamily("gemini"),
+    "deep": getLatestByFamily("gemini"),
+    "artistry": getLatestByFamily("gemini"),
+    "quick": getLatestClaudeByTier("sonnet"),
+    "unspecified-low": getLatestClaudeByTier("sonnet"),
+    "unspecified-high": getLatestByFamily("gpt"),
+    "writing": getLatestByFamily("gemini"),
+    "visual": getLatestByFamily("gemini"),
+    "business-logic": getLatestByFamily("gpt"),
+    "data-analysis": getLatestClaudeByTier("sonnet"),
   },
 }
 
