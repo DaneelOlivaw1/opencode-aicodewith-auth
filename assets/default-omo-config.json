@@ -10,7 +10,7 @@
       "variant": "medium"
     },
     "oracle": {
-      "model": "aicodewith/gpt-5.2",
+      "model": "aicodewith/gpt-5.4",
       "variant": "high"
     },
     "librarian": {
@@ -32,7 +32,7 @@
       "variant": "max"
     },
     "momus": {
-      "model": "aicodewith/gpt-5.2",
+      "model": "aicodewith/gpt-5.4",
       "variant": "medium"
     },
     "atlas": {
@@ -54,10 +54,10 @@
       "model": "aicodewith/claude-sonnet-4-6"
     },
     "frontend-ui-ux-engineer": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gemini-3.1-pro-preview"
     },
     "document-writer": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gemini-3.1-pro-preview"
     }
   },
   "categories": {
@@ -90,10 +90,10 @@
       "model": "aicodewith/gemini-3-pro"
     },
     "visual": {
-      "model": "aicodewith/gemini-3-pro"
+      "model": "aicodewith/gemini-3.1-pro-preview"
     },
     "business-logic": {
-      "model": "aicodewith/gpt-5.2"
+      "model": "aicodewith/gpt-5.4"
     },
     "data-analysis": {
       "model": "aicodewith/claude-sonnet-4-6"
