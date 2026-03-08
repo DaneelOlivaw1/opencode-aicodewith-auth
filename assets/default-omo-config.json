@@ -20,7 +20,7 @@
       "model": "aicodewith/claude-haiku-4-5-20251001"
     },
     "multimodal-looker": {
-      "model": "aicodewith/gpt-5.3-codex",
+      "model": "aicodewith/gpt-5.4",
       "variant": "medium"
     },
     "prometheus": {
