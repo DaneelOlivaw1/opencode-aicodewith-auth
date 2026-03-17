@@ -33,7 +33,7 @@
       "variant": "medium"
     },
     "atlas": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "sisyphus-junior": {
       "model": "aicodewith/claude-sonnet-4-6"
@@ -63,7 +63,7 @@
       "variant": "high"
     },
     "ultrabrain": {
-      "model": "aicodewith/gpt-5.3-codex",
+      "model": "aicodewith/gpt-5.4",
       "variant": "high"
     },
     "deep": {
@@ -78,10 +78,10 @@
       "model": "aicodewith/claude-haiku-4-5-20251001"
     },
     "unspecified-low": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "unspecified-high": {
-      "model": "aicodewith/claude-sonnet-4-5-20250929"
+      "model": "aicodewith/claude-sonnet-4-6"
     },
     "writing": {
       "model": "aicodewith/gemini-3-pro"
