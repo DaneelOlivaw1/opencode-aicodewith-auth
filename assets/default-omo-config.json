@@ -75,7 +75,7 @@
       "variant": "high"
     },
     "quick": {
-      "model": "aicodewith/claude-haiku-4-5-20251001"
+      "model": "aicodewith/gpt-5.4-mini"
     },
     "unspecified-low": {
       "model": "aicodewith/claude-sonnet-4-6"
