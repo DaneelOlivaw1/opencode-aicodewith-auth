@@ -67,7 +67,7 @@
       "variant": "high"
     },
     "deep": {
-      "model": "aicodewith/gpt-5.3-codex",
+      "model": "aicodewith/gpt-5.4",
       "variant": "medium"
     },
     "artistry": {
