@@ -24,13 +24,18 @@
           "variant": "high"
         },
         {
-          "model": "anthropic/claude-opus-4-6",
+          "model": "anthropic/claude-opus-4.6",
           "variant": "max"
         }
       ]
     },
     "explore": {
-      "model": "aicodewith/claude-haiku-4-5-20251001"
+      "model": "aicodewith/claude-haiku-4-5-20251001",
+      "fallback_models": [
+        {
+          "model": "anthropic/claude-haiku-4.5"
+        }
+      ]
     },
     "multimodal-looker": {
       "model": "aicodewith/gpt-5.4",
@@ -69,7 +74,7 @@
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-6",
+          "model": "anthropic/claude-opus-4.6",
           "variant": "max"
         },
         {
@@ -121,7 +126,7 @@
       "variant": "high",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-6",
+          "model": "anthropic/claude-opus-4.6",
           "variant": "max"
         }
       ]
@@ -135,7 +140,7 @@
           "variant": "high"
         },
         {
-          "model": "anthropic/claude-opus-4-6",
+          "model": "anthropic/claude-opus-4.6",
           "variant": "max"
         }
       ]
@@ -145,7 +150,7 @@
       "variant": "medium",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-6",
+          "model": "anthropic/claude-opus-4.6",
           "variant": "max"
         },
         {
@@ -159,7 +164,7 @@
       "variant": "high",
       "fallback_models": [
         {
-          "model": "anthropic/claude-opus-4-6",
+          "model": "anthropic/claude-opus-4.6",
           "variant": "max"
         },
         {
@@ -171,7 +176,7 @@
       "model": "aicodewith/gpt-5.4-mini",
       "fallback_models": [
         {
-          "model": "anthropic/claude-haiku-4-5"
+          "model": "anthropic/claude-haiku-4.5"
         },
         {
           "model": "google/gemini-3-flash-preview"
@@ -206,7 +211,7 @@
       "model": "aicodewith/gemini-3-pro",
       "fallback_models": [
         {
-          "model": "anthropic/claude-sonnet-4-6"
+          "model": "anthropic/claude-sonnet-4.6"
         }
       ]
     },
