@@ -59,8 +59,10 @@
 当官方文档询问用户是否有 Claude/ChatGPT/Gemini 订阅时，**全部回答 NO**：
 
 ```bash
-bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
+bunx oh-my-opencode install --no-tui --claude=no --openai=no --gemini=no --copilot=no
 ```
+
+> **⚠️ 注意：** 正确的 flag 是 `--openai=no`，不是 `--chatgpt=no`。请参考 oh-my-opencode 官方文档确认最新的 CLI 参数。
 
 **原因：** 我们使用 AICodewith 作为统一认证层，不需要这些订阅。
 
@@ -69,6 +71,58 @@ bunx oh-my-opencode install --no-tui --claude=no --chatgpt=no --gemini=no
 **不要执行** 官方文档中的认证步骤（Anthropic、Google Gemini、OpenAI 的 OAuth 登录）。
 
 这些步骤是为有订阅的用户准备的，我们将在下一步使用 AICodewith 认证代替。
+
+#### 1.3 验证插件缓存安装（关键步骤）
+
+**OpenCode 从 `~/.cache/opencode/packages/` 目录加载插件**，而不是从 `~/.config/opencode/node_modules/` 或 `~/.opencode/node_modules/`。
+
+安装完成后，必须检查插件是否已正确安装到缓存目录：
+
+```bash
+ls ~/.cache/opencode/packages/
+```
+
+应该能看到类似以下目录：
+```
+opencode-aicodewith-auth@latest/
+oh-my-opencode@<version>/
+```
+
+**检查目录是否为空：**
+
+```bash
+ls ~/.cache/opencode/packages/opencode-aicodewith-auth@latest/node_modules/opencode-aicodewith-auth/dist/index.js
+```
+
+如果文件不存在或目录为空，说明 OpenCode 的自动安装失败了，需要手动安装：
+
+```bash
+cd ~/.cache/opencode/packages/opencode-aicodewith-auth@latest
+bun init -y
+bun add opencode-aicodewith-auth
+```
+
+对 oh-my-opencode 也做同样的操作（注意替换为实际版本号）：
+
+```bash
+cd ~/.cache/opencode/packages/oh-my-opencode@<version>
+bun init -y
+bun add oh-my-opencode@<version>
+```
+
+**验证方法：** 检查 OpenCode 启动日志确认插件是否加载成功：
+
+```bash
+# 查看最新日志
+ls -lt ~/.local/share/opencode/log/ | head -2
+# 搜索插件加载相关信息
+grep -E "plugin|aicodewith|error|fail" ~/.local/share/opencode/log/<最新日志文件>
+```
+
+如果看到类似以下错误，说明缓存目录安装有问题：
+```
+ENOENT: no such file or directory, open '.../.cache/opencode/packages/opencode-aicodewith-auth@latest/node_modules/package.json'
+```
 
 ---
 
@@ -194,7 +248,18 @@ cat ~/.config/opencode/oh-my-opencode.json
 
 ### Step 4: 验证安装
 
-#### 4.1 检查 npm 源
+#### 4.1 检查插件加载
+
+启动 OpenCode 后，检查最新日志确认插件已加载：
+
+```bash
+ls -lt ~/.local/share/opencode/log/ | head -2
+grep -E "plugin|aicodewith" ~/.local/share/opencode/log/<最新日志文件> | head -10
+```
+
+**成功标志：** 日志中应出现 `service=plugin path=opencode-aicodewith-auth loading plugin`，且没有 `ENOENT` 或 `failed to resolve plugin server entry` 错误。
+
+#### 4.2 检查 npm 源
 
 ```bash
 npm config get registry
@@ -202,7 +267,7 @@ npm config get registry
 
 如果输出不是 `https://registry.npmjs.org/`（例如显示 taobao、cnpm 等镜像），需要在最终提示中加入警告。
 
-#### 4.2 告诉用户安装完成
+#### 4.3 告诉用户安装完成
 
 **如果用户在 Claude Code 中执行安装：**
 
@@ -252,6 +317,7 @@ npm config get registry
 | `~/.local/share/opencode/auth.json` | 存储 AICodewith API key |
 | `~/.config/opencode/opencode.json` | 注册两个插件 |
 | `~/.config/opencode/oh-my-opencode.json` | 配置 agents 使用 AICodewith 模型 |
+| `~/.cache/opencode/packages/` | **OpenCode 插件实际加载目录**（关键） |
 
 ---
 
@@ -266,6 +332,8 @@ npm config get registry
 7. **ALWAYS follow official oh-my-opencode README first** — 本文档只补充 AICodewith 认证部分
 8. **NEVER hardcode agent list** — 必须遍历官方配置中的所有 agent，根据角色智能选择模型
 9. **ALWAYS choose model by agent role** — 主编排用 Opus，架构用 GPT，前端用 Gemini，其他用 Sonnet
+10. **ALWAYS check logs after installation** — 查看 `~/.local/share/opencode/log/` 确认插件加载成功，不要假设配置写入就等于插件生效
+11. **ALWAYS verify plugin cache** — 确认 `~/.cache/opencode/packages/` 下的插件目录不为空，如为空需手动安装
 
 ---
 
@@ -279,9 +347,51 @@ npm config set registry https://registry.npmjs.org/
 # 重启 OpenCode，之后可以改回原来的源
 ```
 
-### "Provider not found: aicodewith"
-- 检查 `opencode.json` 是否包含 `"opencode-aicodewith-auth"`
-- 重启 OpenCode
+### "Provider not found: aicodewith" 或 "model aicodewith/xxx is not valid"
+
+这通常意味着 `opencode-aicodewith-auth` 插件没有被 OpenCode 加载。
+
+**排查步骤：**
+
+1. 检查 `opencode.json` 是否包含 `"opencode-aicodewith-auth"`
+2. 检查插件缓存目录是否为空：
+```bash
+ls ~/.cache/opencode/packages/opencode-aicodewith-auth@latest/node_modules/opencode-aicodewith-auth/dist/index.js
+```
+3. 如果文件不存在，手动安装到缓存目录：
+```bash
+cd ~/.cache/opencode/packages/opencode-aicodewith-auth@latest
+bun init -y
+bun add opencode-aicodewith-auth
+```
+4. 检查启动日志确认插件加载：
+```bash
+grep -E "plugin|aicodewith|error" ~/.local/share/opencode/log/$(ls -t ~/.local/share/opencode/log/ | head -1)
+```
+5. 重启 OpenCode
+
+### 插件缓存目录为空
+
+OpenCode 在启动时会尝试自动安装插件到 `~/.cache/opencode/packages/`。如果自动安装失败（常见于 `@opencode-ai/plugin` 版本不匹配），目录会被创建但内容为空。
+
+**解决方法：**
+
+```bash
+# 手动安装 opencode-aicodewith-auth
+cd ~/.cache/opencode/packages/opencode-aicodewith-auth@latest
+bun init -y
+bun add opencode-aicodewith-auth
+
+# 手动安装 oh-my-opencode（替换为实际版本号）
+cd ~/.cache/opencode/packages/oh-my-opencode@<version>
+bun init -y
+bun add oh-my-opencode@<version>
+```
+
+**如何确认版本号：**
+```bash
+ls ~/.cache/opencode/packages/ | grep oh-my-opencode
+```
 
 ### Agents 仍使用默认模型
 
@@ -294,6 +404,7 @@ npm config set registry https://registry.npmjs.org/
 
 ## 成功标志
 
-1. 运行 `opencode --model aicodewith/claude-opus-4-6-20260205` 正常启动
-2. 使用 `ultrawork` 关键词触发 Sisyphus 编排多个 agents
-3. 只需一个 AICodewith 账号，无需其他订阅
+1. 启动日志中 `opencode-aicodewith-auth` 插件加载成功（无 ENOENT 错误）
+2. 运行 `opencode --model aicodewith/claude-opus-4-6-20260205` 正常启动
+3. 使用 `ultrawork` 关键词触发 Sisyphus 编排多个 agents
+4. 只需一个 AICodewith 账号，无需其他订阅
